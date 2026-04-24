@@ -1,0 +1,23 @@
+meta {
+  name: Add Comment
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/videos/{{videoId}}/comment
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "pseudo": "test_user_01",
+    "content": "Super vidéo, je vote pour toi !"
+  }
+}
+
+docs {
+  # Ajouter un Commentaire
+  Ajoute un commentaire à la vidéo.
+}

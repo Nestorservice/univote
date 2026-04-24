@@ -1,0 +1,16 @@
+meta {
+  name: Fiche Candidat
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/candidates/{{candidateId}}
+  body: none
+  auth: none
+}
+
+docs {
+  # Fiche Candidat
+  Retourne les détails complets d'un candidat avec son événement associé.
+}

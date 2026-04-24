@@ -1,0 +1,22 @@
+meta {
+  name: Supprimer Événement
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/admin/events/{{eventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Supprimer un Événement
+  Supprime un événement et tous ses candidats (cascade).
+  
+  ⚠️ Action irréversible !
+}

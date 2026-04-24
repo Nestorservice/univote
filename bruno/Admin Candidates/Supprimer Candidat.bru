@@ -1,0 +1,20 @@
+meta {
+  name: Supprimer Candidat
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/admin/candidates/{{candidateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Supprimer un Candidat
+  Supprime un candidat définitivement.
+}

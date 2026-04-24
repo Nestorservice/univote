@@ -1,0 +1,21 @@
+meta {
+  name: Liste Événements (Public)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/events?page=1&limit=10&status=open
+  body: none
+  auth: none
+}
+
+docs {
+  # Lister les Événements Publics
+  Retourne les événements ouverts ou fermés (pas les brouillons).
+  
+  **Params:**
+  - `page` — numéro de page (défaut: 1)
+  - `limit` — éléments par page (défaut: 20)
+  - `status` — filtre: `open`, `closed` (optionnel)
+}

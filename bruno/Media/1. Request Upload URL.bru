@@ -1,0 +1,25 @@
+meta {
+  name: Request Upload URL
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/upload/request
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "event_id": "{{eventId}}",
+    "pseudo": "test_user_01",
+    "title": "Ma superbe danse !"
+  }
+}
+
+docs {
+  # Demande d'Upload Cloudinary
+  Retourne les paramètres de signature pour permettre l'upload direct au frontend.
+  Enregistre aussi la vidéo en statut `pending_moderation` en BD.
+}

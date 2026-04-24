@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Candidats - UNI-VOTE</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icofont -->
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <!-- Font Icons -->
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom Css -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Mobile Header -->
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="index.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="brand-logo">
+        </a>
+    </div>
+
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <!-- Main Content -->
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <!-- Header Election Info -->
+                        <div class="d-flex align-items-center mb-3">
+                            <a href="events.html" class="material-icons text-dark text-decoration-none m-none me-3">arrow_back</a>
+                            <div>
+                                <p class="mb-0 fw-bold text-body fs-6" id="eventTitle">Chargement du scrutin...</p>
+                                <small class="text-muted d-block" id="eventCountdown">--:--:--</small>
+                            </div>
+                        </div>
+
+                        <!-- Candidates List Container (Snap Scroll) -->
+                        <div class="bg-white rounded-4 shadow-sm mb-4 snap-container" id="candidatesFeedContainer" style="height: 70vh; overflow-y: scroll; padding: 0;">
+                            <!-- Skeleton loader -->
+                            <div class="p-3 border-bottom d-flex align-items-center snap-child">
+                                <div class="skeleton-card skeleton rounded-circle me-3" style="width: 50px; height: 50px;"></div>
+                                <div class="w-100">
+                                    <div class="skeleton-card skeleton mb-2" style="height: 15px; width: 60%;"></div>
+                                    <div class="skeleton-card skeleton" style="height: 10px; width: 40%;"></div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-bottom d-flex align-items-center snap-child">
+                                <div class="skeleton-card skeleton rounded-circle me-3" style="width: 50px; height: 50px;"></div>
+                                <div class="w-100">
+                                    <div class="skeleton-card skeleton mb-2" style="height: 15px; width: 60%;"></div>
+                                    <div class="skeleton-card skeleton" style="height: 10px; width: 40%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Sidebar Desktop Left -->
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="brand-logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link"><span class="material-icons me-3">how_to_vote</span> <span>Événements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="social.html" class="nav-link"><span class="material-icons me-3">explore</span> <span>Flux Social</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="faq.html" class="nav-link"><span class="material-icons me-3">help_outline</span> <span>Aide & FAQ</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="contact.html" class="nav-link"><span class="material-icons me-3">mail_outline</span> <span>Contact</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Current User Info -->
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 mt-4 d-flex align-items-center">
+                            <span class="material-icons text-primary fs-1 me-2">account_circle</span>
+                            <div>
+                                <small class="text-muted d-block">Connecté en tant que :</small>
+                                <strong class="text-primary" id="sidebarPseudo">...</strong>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Sidebar Desktop Right -->
+                <aside class="col col-xl-3 order-xl-3 col-lg-6 order-lg-3 col-md-6 col-sm-6 col-12 web-none d-none d-xl-block">
+                    <div class="fix-sidebar">
+                        <!-- Search Box Placeholder -->
+                        <div class="sticky-sidebar2 mb-3">
+                            <div class="bg-white rounded-4 overflow-hidden shadow-sm p-4 text-center">
+                                <i class="icofont-shield-check text-success display-4 mb-3"></i>
+                                <h6 class="fw-bold">Vote Sécurisé</h6>
+                                <p class="small text-muted mb-0">Tous les paiements sont sécurisés par Notch Pay. Un seul vote autorisé par numéro de téléphone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery Js -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- Bootstrap Bundle Js -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core UNI-VOTE -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/custom.js"></script>
+    
+    <!-- Page Logic -->
+    <script src="js/pages/vote.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Candidat - UNI-VOTE</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="events.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <div class="mb-4 d-flex align-items-center">
+                            <a href="javascript:history.back()" class="material-icons text-dark text-decoration-none me-3">arrow_back</a>
+                            <p class="ms-2 mb-0 fw-bold text-body fs-6" id="candidate-name">Chargement...</p>
+                        </div>
+                        <div id="candidate-content">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <div class="p-2 bg-light offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+                <aside class="col col-xl-3 order-xl-3 col-lg-6 order-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="fix-sidebar">
+                        <div class="side-trend lg-none">
+                            <div class="sticky-sidebar2 mb-3">
+                                <div class="bg-white rounded-4 overflow-hidden shadow-sm mb-4">
+                                    <h6 class="fw-bold text-body p-3 mb-0 border-bottom">Videos du candidat</h6>
+                                    <div id="candidate-videos">
+                                        <div class="p-3 text-center text-muted">Chargement...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        var candidateId = null;
+        var currentCandidate = null;
+        
+        function getParams() {
+            return new URLSearchParams(window.location.search).get('id');
+        }
+        
+        function loadCandidate() {
+            candidateId = getParams();
+            if (!candidateId) {
+                window.location.href = 'events.html';
+                return;
+            }
+            
+            document.getElementById('candidate-content').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+            
+            API.getCandidate(candidateId).then(function (data) {
+                currentCandidate = data;
+                document.getElementById('candidate-name').textContent = '#' + data.dossard + ' ' + data.name;
+                renderCandidate(data);
+                loadVideos(data.event_id);
+            }).catch(function (error) {
+                document.getElementById('candidate-content').innerHTML = '<div class="text-center py-4 text-danger">Erreur: ' + error.message + '</div>';
+            });
+        }
+        
+        function renderCandidate(candidate) {
+            var html = Components.renderCandidateDetail(candidate);
+            document.getElementById('candidate-content').innerHTML = html;
+        }
+        
+        function loadVideos(eventId) {
+            var container = document.getElementById('candidate-videos');
+            
+            API.getVideos(eventId, 'popular', null, 10).then(function (data) {
+                var videos = data.videos.filter(function (v) {
+                    return v.candidate_id === parseInt(candidateId);
+                });
+                
+                if (videos.length === 0) {
+                    container.innerHTML = '<div class="p-3 text-center text-muted">Aucune video</div>';
+                    return;
+                }
+                
+                var html = '<div class="video-grid p-2">';
+                for (var i = 0; i < videos.length; i++) {
+                    var v = videos[i];
+                    html += '<a href="video-player.html?id=' + v.id + '&event=' + eventId + '" class="video-grid-item">';
+                    html += '<img src="' + (v.thumbnail_url || 'img/post1.png') + '">';
+                    html += '</a>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            }).catch(function () {
+                container.innerHTML = '<div class="p-3 text-center text-muted">Impossible de charger</div>';
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadCandidate);
+        
+    })();
+    </script>
+</body>
+</html>

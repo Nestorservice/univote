@@ -1,0 +1,25 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/health
+  body: none
+  auth: none
+}
+
+docs {
+  # Health Check
+  Vérifie que le serveur API est en ligne et fonctionnel.
+  
+  **Réponse attendue:** 200 OK
+  ```json
+  {
+    "status": "healthy",
+    "service": "univote-api",
+    "version": "1.0.0"
+  }
+  ```
+}

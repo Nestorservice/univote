@@ -1,0 +1,27 @@
+meta {
+  name: Liste Transactions
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/transactions?page=1&limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Liste des Transactions
+  Liste paginée avec filtres optionnels.
+  
+  **Params:**
+  - `page`, `limit` — pagination
+  - `event_id` — filtrer par événement
+  - `status` — filtrer: `pending`, `success`, `failed`
+  - `from` — date début (YYYY-MM-DD)
+  - `to` — date fin (YYYY-MM-DD)
+}

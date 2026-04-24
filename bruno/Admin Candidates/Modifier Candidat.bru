@@ -1,0 +1,29 @@
+meta {
+  name: Modifier Candidat
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/candidates/{{candidateId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Ngoumou Élodie Marie",
+    "bio": "Étudiante en Master 1 de Droit International, mannequin et ambassadrice de mode.",
+    "dossard": "01"
+  }
+}
+
+docs {
+  # Modifier un Candidat
+  Met à jour les informations d'un candidat.
+  Supporte aussi multipart/form-data pour changer la photo.
+}

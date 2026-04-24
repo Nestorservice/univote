@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>UNI-VOTE - Plateforme de Vote</title>
+    <meta name="description" content="UNI-VOTE - Plateforme de vote democratique">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick-theme.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="index.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <ul class="top-osahan-nav-tab nav nav-pills justify-content-center nav-justified mb-4 shadow-sm rounded-4 overflow-hidden bg-white sticky-sidebar2" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="p-3 nav-link text-muted active" id="pills-open-tab" data-bs-toggle="pill" data-bs-target="#pills-open" type="button">Ouverts</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="p-3 nav-link text-muted" id="pills-upcoming-tab" data-bs-toggle="pill" data-bs-target="#pills-upcoming" type="button">A venir</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="p-3 nav-link text-muted" id="pills-closed-tab" data-bs-toggle="pill" data-bs-target="#pills-closed" type="button">Termines</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-open" role="tabpanel">
+                                <div id="events-open-list"></div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-upcoming" role="tabpanel">
+                                <div id="events-upcoming-list"></div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-closed" role="tabpanel">
+                                <div id="events-closed-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <div class="p-2 bg-light offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4">
+                                <a href="index.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="index.html" class="nav-link"><span class="material-icons me-3">house</span> <span>Accueil</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="social.html" class="nav-link"><span class="material-icons me-3">explore</span> <span>Flux Social</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="faq.html" class="nav-link"><span class="material-icons me-3">help</span> <span>FAQ</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="index.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="index.html" class="nav-link"><span class="material-icons me-3">house</span> <span>Accueil</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="social.html" class="nav-link"><span class="material-icons me-3">explore</span> <span>Flux Social</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="faq.html" class="nav-link"><span class="material-icons me-3">help</span> <span>FAQ</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+                <aside class="col col-xl-3 order-xl-3 col-lg-6 order-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="fix-sidebar">
+                        <div class="side-trend lg-none">
+                            <div class="sticky-sidebar2 mb-3">
+                                <div class="input-group mb-4 shadow-sm rounded-4 overflow-hidden py-2 bg-white">
+                                    <span class="input-group-text material-icons border-0 bg-white text-primary">search</span>
+                                    <input type="text" class="form-control border-0 fw-light ps-1" id="searchInput" placeholder="Rechercher...">
+                                </div>
+                                <div class="bg-white rounded-4 overflow-hidden shadow-sm mb-4" id="suggested-candidates">
+                                    <h6 class="fw-bold text-body p-3 mb-0 border-bottom">Candidats populaires</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <div class="py-3 bg-white footer-copyright">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="me-3 small">&copy;2026 <b class="text-primary">UNI-VOTE</b>. Tous droits reserves</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        function loadEvents() {
+            var openList = document.getElementById('events-open-list');
+            var upcomingList = document.getElementById('events-upcoming-list');
+            var closedList = document.getElementById('events-closed-list');
+            
+            openList.innerHTML = Components.showLoading();
+            upcomingList.innerHTML = Components.showLoading();
+            closedList.innerHTML = Components.showLoading();
+            
+            API.getEvents('open').then(function (data) {
+                if (data.events && data.events.length > 0) {
+                    var html = '';
+                    for (var i = 0; i < data.events.length; i++) {
+                        html += Components.renderEventCard(data.events[i]);
+                    }
+                    openList.innerHTML = html;
+                } else {
+                    openList.innerHTML = Components.showEmpty('Aucun scrutin ouvert');
+                }
+            }).catch(function (error) {
+                openList.innerHTML = Components.showError('Erreur: ' + error.message);
+            });
+            
+            // Note: le backend ne supporte pas "upcoming" comme statut de filtre.
+            // On affiche les events "draft" comme "à venir" (visible seulement si admin les publie).
+            upcomingList.innerHTML = Components.showEmpty('Aucun scrutin à venir');
+            
+            API.getEvents('closed').then(function (data) {
+                if (data.events && data.events.length > 0) {
+                    var html = '';
+                    for (var i = 0; i < data.events.length; i++) {
+                        html += Components.renderEventCard(data.events[i]);
+                    }
+                    closedList.innerHTML = html;
+                } else {
+                    closedList.innerHTML = Components.showEmpty('Aucun scrutin terminé');
+                }
+            }).catch(function (error) {
+                closedList.innerHTML = Components.showError('Erreur: ' + error.message);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            loadEvents();
+        });
+        
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+meta {
+  name: Initier Vote
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/vote/initiate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "candidate_id": "{{candidateId}}",
+    "phone": "237655123456",
+    "vote_count": 5
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const body = res.getBody();
+    bru.setVar("transactionRef", body.data.reference);
+  }
+}
+
+docs {
+  # Initier un Vote
+  Lance le processus de vote payant via Mobile Money.
+  
+  **Body:**
+  - `candidate_id` — UUID du candidat
+  - `phone` — Numéro de téléphone (format: 237XXXXXXXXX)
+  - `vote_count` — Nombre de votes (1-100)
+  
+  **Réponse:**
+  - `reference` — Référence de paiement
+  - `payment_url` — URL de paiement (si applicable)
+  - `amount` — Montant en FCFA
+  
+  **Détection opérateur automatique:**
+  - 655-659, 690-699 → Orange Money
+  - 650-654, 670-689 → MTN MoMo
+}

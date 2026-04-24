@@ -1,0 +1,41 @@
+meta {
+  name: Ajouter Candidat
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/events/{{eventId}}/candidates
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  name: Ngoumou Élodie
+  bio: Étudiante en 3ème année de Droit, passionnée de mode et d'art.
+  dossard: 01
+}
+
+script:post-response {
+  if (res.status === 201) {
+    const body = res.getBody();
+    bru.setVar("candidateId", body.data.id);
+  }
+}
+
+docs {
+  # Ajouter un Candidat
+  Ajoute un candidat à un événement. Supporte l'upload de photo via multipart/form-data.
+  
+  **Champs:**
+  - `name` (requis) — Nom du candidat
+  - `bio` — Biographie
+  - `dossard` — Numéro de dossard
+  - `photo` (fichier) — Photo du candidat (jpg, png, webp)
+  
+  L'ID du candidat est automatiquement sauvegardé.
+}

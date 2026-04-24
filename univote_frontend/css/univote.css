@@ -1,0 +1,313 @@
+/**
+ * UNI-VOTE — Surcharges CSS & Utilitaires
+ * Ce fichier s'ajoute par dessus le style natif du template Vogel.
+ */
+
+/* --- Variables Design System --- */
+:root {
+    --uv-primary: #0d6efd;
+    --uv-primary-rgb: 13, 110, 253;
+    --uv-success: #198754;
+    --uv-danger: #dc3545;
+    --uv-warning: #ffc107;
+    --uv-mtn: #ffcc00;
+    --uv-orange: #ff6600;
+    --uv-radius: 1rem;
+    --uv-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+    --uv-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Couleurs Opérateurs Mobile Money --- */
+.bg-mtn { background-color: var(--uv-mtn) !important; color: #000 !important; }
+.text-mtn { color: var(--uv-mtn) !important; }
+.border-mtn { border-color: var(--uv-mtn) !important; }
+
+.bg-orange { background-color: var(--uv-orange) !important; color: #fff !important; }
+.text-orange { color: var(--uv-orange) !important; }
+.border-orange { border-color: var(--uv-orange) !important; }
+
+/* --- Material Icons Sizing --- */
+.material-icons.md-16 { font-size: 16px; vertical-align: middle; }
+.material-icons.md-18 { font-size: 18px; vertical-align: middle; }
+.material-icons.md-20 { font-size: 20px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-32 { font-size: 32px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* --- Micro-interactions globales --- */
+.feed-item {
+    transition: var(--uv-transition);
+    border: 1px solid transparent;
+}
+.feed-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    border-color: rgba(var(--uv-primary-rgb), 0.15);
+}
+
+a.text-decoration-none .feed-item:hover {
+    border-color: rgba(var(--uv-primary-rgb), 0.25);
+}
+
+/* --- Animations & Indicateurs (Temps Réel) --- */
+
+/* Clignotement rouge pour le mot "LIVE" */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+.blink-icon {
+    animation: blink 1.5s infinite;
+}
+
+.live-indicator .badge {
+    animation: blink 1.5s infinite;
+}
+
+/* Pulsation douce pour boutons Call To Action (Voter, Payer) */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--uv-primary-rgb), 0.7); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(var(--uv-primary-rgb), 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--uv-primary-rgb), 0); }
+}
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+.pulse-animation:hover {
+    animation: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--uv-primary-rgb), 0.3);
+}
+
+/* --- Skeleton Loading (Pendant les requêtes API) --- */
+.skeleton-loading {
+    background: #f0f0f0;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s infinite linear;
+    border-radius: var(--uv-radius);
+    color: transparent !important;
+}
+.skeleton-loading * {
+    visibility: hidden;
+}
+@keyframes skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* --- Flux Vidéo (TikTok style) sur mobile --- */
+.video-feed-container {
+    height: calc(100vh - 60px); /* 100vh - navbar header */
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    background-color: #000; /* Fond noir plus immersif */
+    padding: 0 !important;
+}
+
+.video-snap-item {
+    height: 100%;
+    width: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+.video-snap-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Remplit l'écran */
+}
+
+/* Surcouche d'actions par-dessus la vidéo */
+.video-actions-overlay {
+    position: absolute;
+    bottom: 20px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+}
+
+.video-info-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    max-width: 70%;
+    color: #fff;
+    z-index: 10;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+/* Icônes actions vidéos (Like, Comment) */
+.action-btn {
+    background: none;
+    border: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+.action-btn:active {
+    transform: scale(0.9);
+}
+.action-btn .material-icons {
+    font-size: 36px;
+    margin-bottom: 5px;
+}
+
+/* Modification sidebar pour le feed vidéo */
+@media (max-width: 991px) {
+    .video-feed-container {
+        height: 100vh; /* En plein écran sur mobile sans navbar */
+    }
+}
+
+/* --- Video Grid (sidebar thumbnails) --- */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+.video-grid-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.video-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+.video-grid-item:hover img {
+    transform: scale(1.05);
+}
+
+/* --- Tunnel de Paiement --- */
+.candidate-select-card {
+    cursor: pointer;
+    transition: var(--uv-transition);
+    border: 2px solid transparent !important;
+}
+.candidate-select-card:hover {
+    border: 2px solid var(--uv-primary) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+/* --- Badges & Tags --- */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* --- Progress Bars (Résultats) --- */
+.progress {
+    border-radius: 50px;
+    overflow: hidden;
+}
+.progress-bar {
+    transition: width 0.5s ease;
+}
+
+/* --- Snap scroll pour candidats --- */
+.snap-container {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+.snap-child {
+    scroll-snap-align: start;
+    transition: background-color 0.2s;
+}
+.snap-child:hover {
+    background-color: rgba(var(--uv-primary-rgb), 0.03);
+}
+
+/* --- Toast container --- */
+.toast-container {
+    z-index: 1090 !important;
+}
+
+/* --- Stats cards on index --- */
+#quickStats .bg-white {
+    transition: var(--uv-transition);
+}
+#quickStats .bg-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+}
+
+/* --- Hero banner gradient --- */
+.bg-primary.bg-gradient {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 50%, #0a58ca 100%) !important;
+}
+
+/* --- Top candidates sidebar --- */
+#topCandidatesList a {
+    transition: background-color 0.2s;
+}
+#topCandidatesList a:hover {
+    background-color: rgba(var(--uv-primary-rgb), 0.05);
+}
+#topCandidatesList a:last-child {
+    border-bottom: none !important;
+}
+
+/* --- Countdown styling --- */
+.countdown-el {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* --- Custom scrollbar --- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+/* --- Dark Mode Overrides --- */
+.dark .feed-item:hover {
+    border-color: rgba(var(--uv-primary-rgb), 0.3);
+}
+.dark .skeleton-loading {
+    background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+}
+.dark .bg-primary.bg-gradient {
+    background: linear-gradient(135deg, #1a6dfd 0%, #0b5ed7 100%) !important;
+}
+
+/* --- Responsive fine-tuning --- */
+@media (max-width: 576px) {
+    .btn.rounded-pill {
+        font-size: 0.875rem;
+    }
+    #quickStats h5 {
+        font-size: 1.1rem;
+    }
+    #quickStats small {
+        font-size: 0.7rem;
+    }
+}

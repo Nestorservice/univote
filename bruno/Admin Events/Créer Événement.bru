@@ -1,0 +1,44 @@
+meta {
+  name: Créer Événement
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/events
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Miss Campus 2026",
+    "description": "Élection de la plus belle étudiante du campus universitaire. Votez pour votre candidate préférée !",
+    "type": "paid",
+    "price_per_vote": 100,
+    "status": "open",
+    "show_results": true,
+    "opens_at": "2026-04-22T00:00:00Z",
+    "closes_at": "2026-05-22T23:59:59Z"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    const body = res.getBody();
+    bru.setVar("eventId", body.data.id);
+  }
+}
+
+docs {
+  # Créer un Événement
+  Crée un nouveau scrutin. L'ID est automatiquement sauvegardé pour les requêtes suivantes.
+  
+  **Types:** `free` (gratuit) ou `paid` (payant)
+  **Status:** `draft`, `open`, `closed`
+  **price_per_vote:** en FCFA (ex: 100 = 100 FCFA par vote)
+}

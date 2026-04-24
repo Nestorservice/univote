@@ -1,0 +1,20 @@
+meta {
+  name: Journal Audit
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/logs?page=1&limit=50
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Journal d'Audit
+  Liste paginée de toutes les actions admin (login, create, update, delete).
+}

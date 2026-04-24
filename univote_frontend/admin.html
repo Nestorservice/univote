@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>UNI-VOTE - Dashboard Admin</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .admin-nav-link { border-radius: 12px; margin-bottom: 5px; color: #495057; font-weight: 500; padding: 12px 20px; transition: all 0.2s; }
+        .admin-nav-link:hover { background-color: rgba(13, 110, 253, 0.05); color: #0d6efd; }
+        .admin-nav-link.active { background-color: #0d6efd; color: #fff; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); }
+        .admin-nav-link .material-icons { margin-right: 15px; vertical-align: middle; }
+        
+        .tab-content > .tab-pane { display: none; }
+        .tab-content > .active { display: block; }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Top Navbar for Mobile -->
+    <div class="d-flex d-lg-none align-items-center px-3 pt-3 bg-white shadow-sm pb-3">
+        <a href="index.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid" style="height: 35px;" alt="logo">
+        </a>
+        <span class="badge bg-primary ms-2">Admin</span>
+        <button class="ms-auto btn btn-light rounded-circle border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas">
+            <span class="material-icons text-dark">menu</span>
+        </button>
+    </div>
+
+    <!-- Layout -->
+    <div class="container-fluid py-lg-4 px-lg-5">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-xl-2 d-none d-lg-block">
+                <div class="bg-white rounded-4 shadow-sm p-4 sticky-top" style="top: 20px;">
+                    <div class="text-center mb-4 pb-3 border-bottom">
+                        <img src="img/logo.png" class="img-fluid mb-2" style="max-height: 40px;" alt="logo">
+                        <span class="badge bg-primary d-block w-50 mx-auto">Portail Admin</span>
+                    </div>
+                    <div class="nav flex-column nav-pills" id="admin-tabs" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link admin-nav-link active" id="tab-dashboard" data-bs-toggle="pill" href="#v-dashboard" role="tab">
+                            <span class="material-icons">dashboard</span> Tableau de Bord
+                        </a>
+                        <a class="nav-link admin-nav-link" id="tab-events" data-bs-toggle="pill" href="#v-events" role="tab">
+                            <span class="material-icons">how_to_vote</span> Scrutins
+                        </a>
+                        <a class="nav-link admin-nav-link" id="tab-moderation" data-bs-toggle="pill" href="#v-moderation" role="tab">
+                            <span class="material-icons">video_settings</span> Modération Vidéo
+                        </a>
+                        <a class="nav-link admin-nav-link" id="tab-transactions" data-bs-toggle="pill" href="#v-transactions" role="tab">
+                            <span class="material-icons">receipt_long</span> Transactions
+                        </a>
+                        <a class="nav-link admin-nav-link text-danger mt-4" href="#" id="adminLogoutBtn">
+                            <span class="material-icons">logout</span> Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Offcanvas Sidebar -->
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="adminOffcanvas">
+                <div class="offcanvas-header border-bottom">
+                    <img src="img/logo.png" style="height: 30px;" alt="logo"> <span class="badge bg-primary ms-2">Admin</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="nav flex-column nav-pills" id="admin-tabs-mobile" role="tablist">
+                        <a class="nav-link admin-nav-link active" data-bs-toggle="pill" href="#v-dashboard" data-bs-dismiss="offcanvas">
+                            <span class="material-icons">dashboard</span> Tableau de Bord
+                        </a>
+                        <a class="nav-link admin-nav-link" data-bs-toggle="pill" href="#v-events" data-bs-dismiss="offcanvas">
+                            <span class="material-icons">how_to_vote</span> Scrutins
+                        </a>
+                        <a class="nav-link admin-nav-link" data-bs-toggle="pill" href="#v-moderation" data-bs-dismiss="offcanvas">
+                            <span class="material-icons">video_settings</span> Modération Vidéo
+                        </a>
+                        <a class="nav-link admin-nav-link" data-bs-toggle="pill" href="#v-transactions" data-bs-dismiss="offcanvas">
+                            <span class="material-icons">receipt_long</span> Transactions
+                        </a>
+                        <a class="nav-link admin-nav-link text-danger mt-4" href="#" id="adminLogoutBtnMobile">
+                            <span class="material-icons">logout</span> Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9 col-xl-10 mt-4 mt-lg-0">
+                <div class="tab-content" id="v-pills-tabContent">
+                    
+                    <!-- DASHBOARD -->
+                    <div class="tab-pane fade show active" id="v-dashboard" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Vue d'ensemble</h4>
+                            <button class="btn btn-primary rounded-pill btn-sm" onclick="AdminApp.loadDashboard()"><span class="material-icons md-16 align-middle">refresh</span> Actualiser</button>
+                        </div>
+                        
+                        <div class="row g-3 mb-4" id="adminStatsContainer">
+                            <!-- Stats inyectées par JS -->
+                            <div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Derniers Scrutins</h6>
+                                    <div id="adminRecentEvents">Chargement...</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Vidéos en attente de modération</h6>
+                                    <div id="adminPendingVideos">Chargement...</div>
+                                    <div class="text-center mt-3"><a href="#" class="btn btn-outline-primary btn-sm rounded-pill" onclick="$('#tab-moderation').tab('show')">Voir tout</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EVENTS MANAGEMENT -->
+                    <div class="tab-pane fade" id="v-events" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Gestion des Scrutins</h4>
+                            <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#eventModal">+ Nouvel Événement</button>
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Titre</th>
+                                            <th>Statut</th>
+                                            <th>Candidats</th>
+                                            <th>Date Fin</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminEventsTable">
+                                        <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODERATION -->
+                    <div class="tab-pane fade" id="v-moderation" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Modération des Vidéos</h4>
+                            <select class="form-select w-auto rounded-pill shadow-sm" id="moderationFilter">
+                                <option value="pending_moderation">En attente</option>
+                                <option value="approved">Approuvées</option>
+                                <option value="rejected">Rejetées</option>
+                            </select>
+                        </div>
+                        <div class="row g-3" id="adminModerationGrid">
+                            <div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- TRANSACTIONS -->
+                    <div class="tab-pane fade" id="v-transactions" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Transactions (Votes)</h4>
+                            <button class="btn btn-outline-success rounded-pill btn-sm" id="exportTxBtn"><span class="material-icons md-16 align-middle me-1">download</span> CSV</button>
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-4">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Réf</th>
+                                            <th>Candidat</th>
+                                            <th>Montant</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminTransactionsTable">
+                                        <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal (Create/Edit) -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="eventModalTitle">Nouvel Événement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="evId">
+                        <div class="mb-3">
+                            <label class="form-label">Titre</label>
+                            <input type="text" class="form-control" id="evTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="evDesc" rows="3"></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Type</label>
+                                <select class="form-select" id="evType">
+                                    <option value="paid">Payant</option>
+                                    <option value="free">Gratuit</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Prix par Vote (FCFA)</label>
+                                <input type="number" class="form-control" id="evPrice" value="100">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Date de fin</label>
+                                <input type="datetime-local" class="form-control" id="evClose" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Statut</label>
+                                <select class="form-select" id="evStatus">
+                                    <option value="draft">Brouillon</option>
+                                    <option value="open">Ouvert (Live)</option>
+                                    <option value="closed">Fermé</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidates List Modal -->
+    <div class="modal fade" id="candidatesListModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="candidatesListTitle">Gérer les Candidats</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="d-flex justify-content-end mb-3">
+                        <button class="btn btn-primary rounded-pill" onclick="AdminApp.openAddCandidateModal()">+ Ajouter un Candidat</button>
+                    </div>
+                    <div class="row g-3" id="adminCandidatesGrid">
+                        <div class="col-12 text-center py-4"><div class="spinner-border text-primary"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Candidate Form Modal (Create/Edit) -->
+    <div class="modal fade" id="candidateFormModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="candidateFormTitle">Nouveau Candidat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="candidateForm">
+                        <input type="hidden" id="candId">
+                        <div class="mb-3">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" class="form-control" id="candName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Numéro de Dossard (Optionnel)</label>
+                            <input type="text" class="form-control" id="candDossard">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Biographie / Slogan</label>
+                            <textarea class="form-control" id="candBio" rows="3"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Photo (Laissez vide pour conserver l'actuelle si modification)</label>
+                            <input type="file" class="form-control" id="candPhoto" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2" id="candSaveBtn">Enregistrer le candidat</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/pages/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+meta {
+  name: Export CSV
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/transactions/export?status=success
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Export Transactions CSV
+  Télécharge un fichier CSV des transactions.
+  
+  **Params optionnels:** `event_id`, `status`
+}

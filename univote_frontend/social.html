@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>UNI-VOTE - Social Feed</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick-theme.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="index.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                
+                <!-- Center Content: Social Feed -->
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <div class="d-flex align-items-center mb-3">
+                            <a href="index.html" class="material-icons text-dark text-decoration-none m-none me-3">arrow_back</a>
+                            <p class="ms-2 mb-0 fw-bold text-body fs-6">Flux Social</p>
+                            <a href="#" class="ms-auto btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#postModal">
+                                + Créer un Post
+                            </a>
+                        </div>
+                        
+                        <!-- Event Selector -->
+                        <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+                            <label class="form-label fw-bold">Sélectionner un événement</label>
+                            <select class="form-select rounded-5" id="feedEventSelect">
+                                <option value="">Chargement des événements...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Feeds Container -->
+                        <div class="feeds" id="social-feed-container">
+                            <div class="text-center p-4">
+                                <div class="spinner-border text-primary"></div>
+                                <p class="mt-2 text-muted">Chargement du flux social...</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Left Sidebar -->
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <!-- Mobile Offcanvas -->
+                    <div class="p-2 bg-light offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4">
+                                <a href="index.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="index.html" class="nav-link"><span class="material-icons me-3">house</span> <span>Accueil</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link"><span class="material-icons me-3">how_to_vote</span> <span>Événements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="social.html" class="nav-link active"><span class="material-icons me-3">explore</span> <span>Flux Social</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Mon Profil</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="btn btn-primary w-100 text-decoration-none rounded-4 py-3 fw-bold m-0" data-bs-toggle="modal" data-bs-target="#postModal">Créer un Post</a>
+                    </div>
+                    
+                    <!-- Desktop Sidebar -->
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="index.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="index.html" class="nav-link"><span class="material-icons me-3">house</span> <span>Accueil</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link"><span class="material-icons me-3">how_to_vote</span> <span>Événements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="social.html" class="nav-link active"><span class="material-icons me-3">explore</span> <span>Flux Social</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Mon Profil</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="btn btn-primary w-100 text-decoration-none rounded-4 py-3 fw-bold m-0" data-bs-toggle="modal" data-bs-target="#postModal">Créer un Post</a>
+                    </div>
+                </aside>
+
+                <!-- Right Sidebar (Trends/Stats) -->
+                <aside class="col col-xl-3 order-xl-3 col-lg-6 order-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="fix-sidebar">
+                        <div class="side-trend lg-none">
+                            <div class="sticky-sidebar2 mb-3">
+                                <div class="bg-white rounded-4 overflow-hidden shadow-sm account-follow mb-4 p-3">
+                                    <h6 class="fw-bold text-body mb-3 border-bottom pb-2">Top Contributeurs</h6>
+                                    <div id="top-contributors">
+                                        <p class="text-muted small">Aucun contributeur</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Modal -->
+    <div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 bg-light">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-dark fw-bold">Créer un Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <select class="form-select rounded-5" id="postEventSelect">
+                            <option value="">Sélectionner un événement lié...</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control rounded-4 border-0 shadow-sm" placeholder="Exprimez-vous..." id="postContentInput" style="height: 120px"></textarea>
+                        <label for="postContentInput" class="text-muted">Quoi de neuf ? (Titre du post)</label>
+                    </div>
+                    
+                    <div class="bg-white p-3 rounded-4 shadow-sm text-center border" id="uploadZone">
+                        <span class="material-icons md-32 text-muted d-block mb-1">movie</span>
+                        <p class="mb-0 small fw-bold">Ajouter une vidéo (Max 30s)</p>
+                        <input type="file" accept="video/mp4" id="postFileInput" class="form-control mt-2 form-control-sm">
+                    </div>
+                    
+                    <div class="progress mt-3" style="display:none;" id="postProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%"></div>
+                    </div>
+                    <p class="text-danger small mt-2 d-none" id="postError"></p>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-primary rounded-5 fw-bold px-4 py-2 w-100" id="submitPostBtn">
+                        <span class="material-icons me-2 md-18 align-middle">send</span> Publier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold">Commentaires</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="commentsList">
+                        <div class="text-center p-3 text-muted">Chargement...</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="d-flex w-100 align-items-center">
+                        <input type="text" class="form-control form-control-sm rounded-pill me-2" id="newCommentInput" placeholder="Écrire un commentaire...">
+                        <button class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center p-2" id="sendCommentBtn" style="width: 35px; height: 35px;">
+                            <span class="material-icons md-16 m-0 p-0">send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/custom.js"></script>
+    
+    <!-- Social Page Logic -->
+    <script src="js/pages/social.js"></script>
+</body>
+</html>

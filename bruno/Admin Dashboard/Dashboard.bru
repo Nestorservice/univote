@@ -1,0 +1,26 @@
+meta {
+  name: Dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/dashboard
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Dashboard Admin
+  Retourne les statistiques générales:
+  - Revenus totaux et du jour
+  - Votes totaux et du jour
+  - Transactions en attente
+  - Events actifs
+  - Top 5 candidats
+  - Revenus par heure (graphique)
+}

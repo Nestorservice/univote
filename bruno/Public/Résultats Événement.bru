@@ -1,0 +1,17 @@
+meta {
+  name: Résultats Événement
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/events/{{eventId}}/results
+  body: none
+  auth: none
+}
+
+docs {
+  # Résultats d'un Événement
+  Retourne les résultats si `show_results=true`.
+  Sinon retourne 403 Forbidden.
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Video - UNI-VOTE</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="video-feed.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <div class="mb-4 d-flex align-items-center">
+                            <a href="javascript:history.back()" class="material-icons text-dark text-decoration-none me-3">arrow_back</a>
+                            <p class="ms-2 mb-0 fw-bold text-body fs-6" id="video-title">Chargement...</p>
+                        </div>
+                        <div id="video-player-container">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-3 mt-3" id="video-actions">
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-3 mt-3">
+                            <h6 class="fw-bold mb-3">Commentaires</h6>
+                            <div id="comments-list"></div>
+                            <div class="mt-3" id="comment-form">
+                                <div class="input-group">
+                                    <input type="text" class="form-control rounded-start-5" id="commentInput" placeholder="Ajouter un commentaire...">
+                                    <button class="btn btn-primary rounded-end-5" id="sendCommentBtn">Envoyer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        var videoId = null;
+        var eventId = null;
+        var currentVideo = null;
+        
+        function getParams() {
+            var params = new URLSearchParams(window.location.search);
+            videoId = params.get('id');
+            eventId = params.get('event');
+        }
+        
+        function loadVideo() {
+            getParams();
+            if (!videoId || !eventId) {
+                window.location.href = 'events.html';
+                return;
+            }
+            
+            document.getElementById('comments-list').innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div></div>';
+            
+            API.getVideos(eventId, 'recent', null, 100).then(function (data) {
+                var videos = data.videos.filter(function (v) {
+                    return v.id === parseInt(videoId);
+                });
+                
+                if (videos.length === 0) {
+                    document.getElementById('video-player-container').innerHTML = '<div class="text-center py-4 text-danger">Video non trouvee</div>';
+                    return;
+                }
+                
+                currentVideo = videos[0];
+                document.getElementById('video-title').textContent = currentVideo.title;
+                renderVideo(currentVideo);
+                loadComments();
+            }).catch(function (error) {
+                document.getElementById('video-player-container').innerHTML = '<div class="text-center py-4 text-danger">Erreur: ' + error.message + '</div>';
+            });
+        }
+        
+        function renderVideo(video) {
+            var container = document.getElementById('video-player-container');
+            container.innerHTML = '<div class="video-player-container">' +
+                '<video controls poster="' + (video.thumbnail_url || 'img/post1.png') + '" style="width:100%;">' +
+                '<source src="' + video.cloudinary_url + '" type="video/mp4">' +
+                'Votre navigateur ne supporte pas la lecture video.' +
+                '</video>' +
+                '</div>';
+            
+            var actions = document.getElementById('video-actions');
+            actions.innerHTML = '<div class="d-flex align-items-center justify-content-between">' +
+                '<div class="d-flex align-items-center">' +
+                '<button class="btn btn-link text-decoration-none me-3" id="likeBtn">' +
+                '<span class="material-icons md-20 me-1">thumb_up_off_alt</span>' +
+                '<span>' + Utils.formatNumber(video.like_count || 0) + '</span>' +
+                '</button>' +
+                '<span class="text-muted small"><span class="material-icons md-16 me-1">person</span>' + video.uploader_pseudo + '</span>' +
+                '</div>' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-link text-decoration-none material-icons" data-bs-toggle="dropdown">more_vert</button>' +
+                '<ul class="dropdown-menu dropdown-menu-end">' +
+                '<li><a class="dropdown-item" href="#" id="reportBtn"><span class="material-icons md-16 me-1">flag</span>Signaler</a></li>' +
+                '</ul>' +
+                '</div>' +
+                '</div>';
+            
+            document.getElementById('likeBtn').addEventListener('click', handleLike);
+            document.getElementById('reportBtn').addEventListener('click', handleReport);
+        }
+        
+        function loadComments() {
+            API.getVideoComments(videoId).then(function (data) {
+                document.getElementById('comments-list').innerHTML = Components.renderCommentsList(data.comments || []);
+            }).catch(function () {
+                document.getElementById('comments-list').innerHTML = '<div class="text-center py-3 text-muted">Aucun commentaire</div>';
+            });
+        }
+        
+        function handleLike() {
+            var pseudo = Utils.getPseudo();
+            if (!pseudo) {
+                Utils.showPseudoModal(function () {
+                    handleLike();
+                });
+                return;
+            }
+            
+            var btn = document.getElementById('likeBtn');
+            Utils.disableButton(btn);
+            
+            API.likeVideo(videoId, pseudo).then(function () {
+                Utils.showSuccess('Like ajoute!');
+                currentVideo.like_count = (currentVideo.like_count || 0) + 1;
+                btn.querySelector('span:last-child').textContent = Utils.formatNumber(currentVideo.like_count);
+                Utils.enableButton(btn);
+            }).catch(function (error) {
+                Utils.enableButton(btn);
+                Utils.showError(error.message);
+            });
+        }
+        
+        function handleReport(e) {
+            e.preventDefault();
+            var pseudo = Utils.getPseudo();
+            if (!pseudo) {
+                Utils.showPseudoModal(function () {
+                    handleReport({ preventDefault: function () {} });
+                });
+                return;
+            }
+            
+            var reasons = ['Contenu inapproprie', 'Violence', 'Harcelement', 'Autre'];
+            var reason = prompt('Reason: ' + reasons.join(', '));
+            if (!reason) return;
+            
+            API.reportVideo(videoId, pseudo, reason).then(function () {
+                Utils.showSuccess('Signalement envoye');
+            }).catch(function (error) {
+                Utils.showError(error.message);
+            });
+        }
+        
+        function sendComment() {
+            var pseudo = Utils.getPseudo();
+            if (!pseudo) {
+                Utils.showPseudoModal(sendComment);
+                return;
+            }
+            
+            var input = document.getElementById('commentInput');
+            var content = input.value.trim();
+            if (!content) return;
+            
+            var btn = document.getElementById('sendCommentBtn');
+            Utils.disableButton(btn);
+            
+            API.commentVideo(videoId, pseudo, content).then(function () {
+                input.value = '';
+                Utils.showSuccess('Commentaire ajoute');
+                loadComments();
+                Utils.enableButton(btn);
+            }).catch(function (error) {
+                Utils.enableButton(btn);
+                Utils.showError(error.message);
+            });
+        }
+        
+        document.getElementById('sendCommentBtn').addEventListener('click', sendComment);
+        document.addEventListener('DOMContentLoaded', loadVideo);
+        
+    })();
+    </script>
+</body>
+</html>

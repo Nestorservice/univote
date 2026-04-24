@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Mon Pseudo - UNI-VOTE</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="events.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col col-xl-6 col-lg-8 col-md-10 col-sm-12">
+                    <div class="mb-4 d-flex align-items-center">
+                        <a href="events.html" class="material-icons text-dark text-decoration-none me-3">arrow_back</a>
+                        <p class="ms-2 mb-0 fw-bold text-body fs-6">Mon Pseudo</p>
+                    </div>
+                    <div class="bg-white p-4 feed-item rounded-4 shadow-sm">
+                        <div class="text-center mb-4">
+                            <div class="bg-primary bg-gradient text-white rounded-4 d-inline-flex p-4 mb-3">
+                                <span class="material-icons md-32">person</span>
+                            </div>
+                            <h5 class="mb-1">Votre pseudo anonyme</h5>
+                            <p class="text-muted mb-0">Ce pseudo est utilise pour toutes vos interactions sur la plateforme.</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Pseudo actuel</label>
+                            <div class="input-group">
+                                <span class="input-group-text rounded-start-5"><span class="material-icons">badge</span></span>
+                                <input type="text" class="form-control form-control-lg rounded-end-5" id="currentPseudo" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Nouveau pseudo</label>
+                            <input type="text" class="form-control form-control-lg rounded-5" id="newPseudo" placeholder="Entrez un nouveau pseudo" maxlength="20">
+                            <small class="text-muted">Minimum 2 caracteres, maximum 20</small>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary rounded-5 py-3 fw-bold" id="saveBtn">Enregistrer</button>
+                        </div>
+                        <hr class="my-4">
+                        <div class="alert alert-info rounded-4">
+                            <h6 class="alert-heading"><span class="material-icons me-2">info</span>Information</h6>
+                            <p class="mb-0 small">Ce pseudo est stocke localement sur votre appareil. Il n'est pas associe a vos informations personnelles et vous permet de rester anonyme.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        function loadPseudo() {
+            var current = Utils.getPseudo() || 'Pas de pseudo défini';
+            document.getElementById('currentPseudo').value = current;
+        }
+        
+        function savePseudo() {
+            var newPseudo = document.getElementById('newPseudo').value.trim();
+            var btn = document.getElementById('saveBtn');
+            
+            if (newPseudo.length < 2) {
+                Utils.showError('Le pseudo doit contenir au moins 2 caractères');
+                return;
+            }
+            
+            Utils.disableButton(btn);
+            Utils.setPseudo(newPseudo);
+            Utils.showSuccess('Pseudo enregistré : ' + newPseudo);
+            document.getElementById('newPseudo').value = '';
+            document.getElementById('currentPseudo').value = newPseudo;
+            Utils.enableButton(btn);
+            
+            // Rediriger vers la page d'origine si ?return= est présent
+            var returnUrl = Utils.getParam('return');
+            if (returnUrl) {
+                setTimeout(function () {
+                    window.location.href = decodeURIComponent(returnUrl);
+                }, 1000);
+            }
+        }
+        
+        document.getElementById('saveBtn').addEventListener('click', savePseudo);
+        document.getElementById('newPseudo').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') savePseudo();
+        });
+        document.addEventListener('DOMContentLoaded', loadPseudo);
+        
+    })();
+    </script>
+</body>
+</html>

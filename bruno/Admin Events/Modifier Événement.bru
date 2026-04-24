@@ -1,0 +1,28 @@
+meta {
+  name: Modifier Événement
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/events/{{eventId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Miss Campus 2026 - Édition Spéciale",
+    "price_per_vote": 150,
+    "show_results": true
+  }
+}
+
+docs {
+  # Modifier un Événement
+  Mise à jour partielle — seuls les champs envoyés sont modifiés.
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Statut Transaction
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/transactions/{{transactionRef}}/status
+  body: none
+  auth: none
+}
+
+docs {
+  # Statut d'une Transaction
+  Vérifie le statut d'un paiement (polling côté frontend).
+  
+  **Status possibles:** `pending`, `success`, `failed`
+}

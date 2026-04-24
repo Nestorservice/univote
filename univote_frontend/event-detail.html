@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Detail Evenement - UNI-VOTE</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick.css" rel="stylesheet">
+    <link href="vendor/slick/slick/slick-theme.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="events.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <div class="mb-4 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                                <a href="events.html" class="material-icons text-dark text-decoration-none m-none me-3">arrow_back</a>
+                                <p class="ms-2 mb-0 fw-bold text-body fs-6" id="event-title">Chargement...</p>
+                            </div>
+                        </div>
+                        <div id="event-content">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <div class="p-2 bg-light offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="faq.html" class="nav-link"><span class="material-icons me-3">help</span> <span>FAQ</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link active"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pseudo.html" class="nav-link"><span class="material-icons me-3">person</span> <span>Pseudo</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="faq.html" class="nav-link"><span class="material-icons me-3">help</span> <span>FAQ</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+                <aside class="col col-xl-3 order-xl-3 col-lg-6 order-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="fix-sidebar">
+                        <div class="side-trend lg-none">
+                            <div class="sticky-sidebar2 mb-3">
+                                <div class="bg-white rounded-4 overflow-hidden shadow-sm mb-4" id="sidebar-videos">
+                                    <h6 class="fw-bold text-body p-3 mb-0 border-bottom">Videos</h6>
+                                    <div class="p-3 text-center text-muted">Chargement...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <div class="py-3 bg-white footer-copyright">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="me-3 small">&copy;2026 <b class="text-primary">UNI-VOTE</b>. Tous droits reserves</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        var eventId = null;
+        var currentEvent = null;
+        
+        function getEventId() {
+            var params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+        
+        function loadEvent() {
+            eventId = getEventId();
+            if (!eventId) {
+                window.location.href = 'events.html';
+                return;
+            }
+            
+            var content = document.getElementById('event-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+            
+            API.getEvent(eventId).then(function (data) {
+                currentEvent = data;
+                document.getElementById('event-title').textContent = data.title;
+                renderEvent(data);
+                if (data.show_results) {
+                    connectWebSocket();
+                }
+            }).catch(function (error) {
+                content.innerHTML = '<div class="text-center py-4 text-danger">Erreur: ' + error.message + '</div>';
+                Utils.showError('Erreur chargement: ' + error.message);
+            });
+        }
+        
+        function renderEvent(event) {
+            var content = document.getElementById('event-content');
+            var statusClass = 'bg-secondary';
+            var statusText = 'Inconnu';
+            if (event.status === 'open') { statusClass = 'bg-success'; statusText = 'Ouvert'; }
+            else if (event.status === 'upcoming') { statusClass = 'bg-warning text-dark'; statusText = 'A venir'; }
+            else if (event.status === 'closed') { statusClass = 'bg-secondary'; statusText = 'Termine'; }
+            
+            var html = '<div class="bg-white rounded-4 shadow-sm p-4 mb-4">';
+            
+            if (event.banner_url) {
+                html += '<img src="' + event.banner_url + '" class="img-fluid rounded mb-4 w-100" style="max-height:200px;object-fit:cover;" alt="banner">';
+            }
+            
+            html += '<span class="badge ' + statusClass + ' mb-3">' + statusText + '</span>';
+            html += '<h4 class="mb-2">' + sanitizeHTML(event.title) + '</h4>';
+            html += '<p class="text-muted mb-3">' + sanitizeHTML(event.description || '') + '</p>';
+            
+            if (event.status === 'open') {
+                html += Components.renderCountdown(event.closes_at);
+            }
+            
+            html += '<div class="d-flex align-items-center justify-content-between mb-4">';
+            html += '<span class="text-muted"><span class="material-icons md-16 me-1">how_to_vote</span>' + (event.type === 'free' ? 'Gratuit' : event.price_per_vote + ' FCA/vote') + '</span>';
+            html += '<span class="text-muted"><span class="material-icons md-16 me-1">people</span>' + (event.candidates ? event.candidates.length : '?') + ' candidats</span>';
+            html += '</div>';
+            
+            html += '</div>';
+            
+            html += '<h5 class="mb-3 fw-bold">Candidats</h5>';
+            html += Components.renderCandidatesList(event.candidates || []);
+            
+            content.innerHTML = html;
+            loadVideos();
+        }
+        
+        function loadVideos() {
+            var videosDiv = document.getElementById('sidebar-videos');
+            if (!currentEvent || !currentEvent.id) return;
+            
+            API.getVideos(currentEvent.id, 'recent', null, 6).then(function (data) {
+                var html = '<h6 class="fw-bold text-body p-3 mb-0 border-bottom">Videos</h6>';
+                if (data.videos && data.videos.length > 0) {
+                    html += '<div class="video-grid p-2">';
+                    for (var i = 0; i < data.videos.length; i++) {
+                        var v = data.videos[i];
+                        html += '<a href="video-player.html?id=' + v.id + '&event=' + currentEvent.id + '" class="video-grid-item">';
+                        html += '<img src="' + (v.thumbnail_url || 'img/post1.png') + '">';
+                        html += '</a>';
+                    }
+                    html += '</div>';
+                    html += '<a href="video-feed.html?event=' + currentEvent.id + '" class="d-block p-3 text-center border-top text-decoration-none">Voir toutes les videos</a>';
+                } else {
+                    html += '<div class="p-3 text-center text-muted">Aucune video</div>';
+                }
+                videosDiv.innerHTML = html;
+            }).catch(function () {
+                videosDiv.innerHTML = '<div class="p-3 text-center text-muted">Impossible de charger les videos</div>';
+            });
+        }
+        
+        function connectWebSocket() {
+            if (!eventId) return;
+            
+            WebSocketClient.connect(eventId);
+            WebSocketClient.onMessage = function (data) {
+                updateResults(data);
+            };
+        }
+        
+        function updateResults(data) {
+            var resultsDiv = document.getElementById('results-bar');
+            if (!resultsDiv || !currentEvent) return;
+            
+            var totalVotes = currentEvent.candidates.reduce(function (sum, c) {
+                return sum + (c.id === data.candidate_id ? data.vote_count : c.vote_count);
+            }, 0);
+            
+            var html = '';
+            for (var i = 0; i < currentEvent.candidates.length; i++) {
+                var c = currentEvent.candidates[i];
+                if (c.id === data.candidate_id) {
+                    c.vote_count = data.vote_count;
+                }
+                html += Components.renderResultsBar(c, totalVotes);
+            }
+            resultsDiv.innerHTML = html;
+            currentEvent.candidates.sort(function (a, b) { return b.vote_count - a.vote_count; });
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadEvent);
+        
+    })();
+    </script>
+</body>
+</html>

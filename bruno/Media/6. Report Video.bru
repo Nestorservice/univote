@@ -1,0 +1,25 @@
+meta {
+  name: Report Video
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/report
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "video_id": "{{videoId}}",
+    "pseudo": "angry_user",
+    "reason": "inappropriate"
+  }
+}
+
+docs {
+  # Signaler une Vidéo
+  Permet de signaler une vidéo. Si la vidéo atteint un certain seuil de signalements (par ex. 5), 
+  elle sera automatiquement masquée et changera de statut en `hidden_reports`.
+}

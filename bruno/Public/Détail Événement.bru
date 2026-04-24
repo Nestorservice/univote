@@ -1,0 +1,16 @@
+meta {
+  name: Détail Événement
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/events/{{eventId}}
+  body: none
+  auth: none
+}
+
+docs {
+  # Détail d'un Événement
+  Retourne l'événement avec tous ses candidats triés par nombre de votes.
+}

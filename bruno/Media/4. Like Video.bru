@@ -1,0 +1,23 @@
+meta {
+  name: Like Video
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/videos/{{videoId}}/like
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "pseudo": "test_user_01"
+  }
+}
+
+docs {
+  # Liker une vidéo
+  Ajoute un "J'aime" à la vidéo. 
+  La requête est **idempotente** grâce au cache Redis : le même `pseudo` ne peut liker qu'une seule fois.
+}

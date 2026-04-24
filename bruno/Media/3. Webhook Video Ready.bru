@@ -1,0 +1,37 @@
+meta {
+  name: Webhook Cloudinary (Simulé)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/webhook/video-ready
+  body: json
+  auth: none
+}
+
+headers {
+  X-Cld-Signature: YOUR_GENERATED_SIGNATURE
+  X-Cld-Timestamp: 1672531200
+}
+
+body:json {
+  {
+    "notification_type": "moderation",
+    "public_id": "univote/events/uuid-here/video_123",
+    "secure_url": "https://res.cloudinary.com/.../video_123.mp4",
+    "duration": 25.5,
+    "moderation": [
+      {
+        "kind": "aws_rek",
+        "status": "approved"
+      }
+    ]
+  }
+}
+
+docs {
+  # Simulation Webhook Cloudinary
+  **Attention:** Cette requête va échouer avec `401 Unauthorized` si les headers de signature (HMAC-SHA1) ne sont pas correctement calculés par rapport à votre `CLOUDINARY_API_SECRET`.
+  C'est normal, c'est une protection contre les fausses requêtes d'approbation !
+}

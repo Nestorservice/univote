@@ -1,9 +1,8 @@
 /**
  * Configuration globale de l'application UNI-VOTE Frontend
  */
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_URL = isLocalhost ? 'http://localhost:8080/api/v1' : 'https://univote-api.onrender.com/api/v1';
-const WS_URL = isLocalhost ? 'ws://localhost:8080/ws' : 'wss://univote-api.onrender.com/ws';
+const API_URL = window.location.origin + '/api/v1';
+const WS_URL = (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host + '/ws';
 
 const CONFIG = {
     // Endpoints du backend

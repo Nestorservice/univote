@@ -92,6 +92,35 @@ func main() {
 	// Servir les fichiers uploadés
 	router.Static("/uploads", cfg.UploadDir)
 
+	// Servir les fichiers statiques du frontend
+	router.Static("/css", "../univote_frontend/css")
+	router.Static("/js", "../univote_frontend/js")
+	router.Static("/img", "../univote_frontend/img")
+	router.Static("/vendor", "../univote_frontend/vendor")
+
+	// Fallback pour les pages HTML à la racine (SPA & pages multiples)
+	router.NoRoute(func(c *gin.Context) {
+		path := c.Request.URL.Path
+		if path == "/" {
+			path = "/index.html"
+		}
+		// On suppose que le binaire est exécuté depuis le dossier racine ou backend/
+		// ../univote_frontend fonctionnera si exécuté depuis backend/
+		// On fait un check d'existence pour plus de robustesse
+		filepath := "../univote_frontend" + path
+		if _, err := os.Stat(filepath); err == nil {
+			c.File(filepath)
+		} else {
+			// Essai sans "../" si on est déjà à la racine du projet
+			filepath = "./univote_frontend" + path
+			if _, err := os.Stat(filepath); err == nil {
+				c.File(filepath)
+			} else {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Resource not found"})
+			}
+		}
+	})
+
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

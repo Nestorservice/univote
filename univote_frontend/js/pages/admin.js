@@ -134,31 +134,40 @@
 
         // ── EVENTS ──
         loadEvents: function() {
-            var tbody = document.getElementById('adminEventsTable');
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>';
+            var grid = document.getElementById('adminEventsGrid');
+            if (!grid) return;
+            grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
             this.request('/admin/events').then(function(data) {
                 var events = data.data || [], html = '';
-                if (!events.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Aucun scrutin</td></tr>'; return; }
+                if (!events.length) { grid.innerHTML = '<div class="col-12 text-center py-5 text-muted">Aucun scrutin</div>'; return; }
                 for (var i = 0; i < events.length; i++) {
                     var e = events[i];
-                    var sb = e.status==='open' ? '<span class="badge bg-success">Ouvert</span>' : e.status==='closed' ? '<span class="badge bg-secondary">Fermé</span>' : '<span class="badge bg-warning text-dark">Brouillon</span>';
-                    // BUG FIX: Use actual candidate count from preloaded data
+                    var statusBadge = e.status === 'open' ? '<span class="badge bg-success">Ouvert</span>' : e.status === 'closed' ? '<span class="badge bg-secondary">Fermé</span>' : '<span class="badge bg-warning text-dark">Brouillon</span>';
                     var candCount = (e.candidates && e.candidates.length) || 0;
-                    var bannerThumb = e.banner_url ? '<img src="'+Utils.sanitizeHTML(e.banner_url)+'" class="rounded me-2" style="width:40px;height:40px;object-fit:cover">' : '';
-                    html += '<tr>' +
-                        '<td>' + bannerThumb + '<span class="fw-bold">' + Utils.sanitizeHTML(e.title) + '</span></td>' +
-                        '<td>' + sb + '</td>' +
-                        '<td><span class="badge bg-primary bg-opacity-10 text-primary">' + candCount + ' candidats</span></td>' +
-                        '<td>' + (e.closes_at ? Utils.formatDate(e.closes_at) : '-') + '</td>' +
-                        '<td>' +
-                            '<a href="event-dashboard.html?id=' + e.id + '" class="btn btn-sm btn-light text-success me-1" title="Dashboard"><span class="material-icons md-18">analytics</span></a>' +
-                            '<button class="btn btn-sm btn-light text-primary me-1" onclick="AdminApp.editEvent(\'' + e.id + '\')" title="Modifier"><span class="material-icons md-18">edit</span></button>' +
-                            '<button class="btn btn-sm btn-primary me-1" onclick="AdminApp.openCandidatesModal(\'' + e.id + '\', \'' + e.title.replace(/'/g, "\\'") + '\')" title="Candidats"><span class="material-icons md-18">group</span></button>' +
-                            '<button class="btn btn-sm btn-light text-danger" onclick="AdminApp.deleteEvent(\'' + e.id + '\')" title="Supprimer"><span class="material-icons md-18">delete</span></button>' +
-                        '</td></tr>';
+                    var bannerHtml = e.banner_url ? '<div style="height:140px; background:url(\''+Utils.sanitizeHTML(e.banner_url)+'\') center/cover; border-radius: 1rem 1rem 0 0;"></div>' : '<div class="bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="height:140px; border-radius: 1rem 1rem 0 0;"><span class="material-icons text-primary md-36">how_to_vote</span></div>';
+                    
+                    html += '<div class="col-md-6 col-xl-4">' +
+                        '<div class="card h-100 border-0 shadow-sm rounded-4">' + bannerHtml +
+                            '<div class="card-body p-4">' +
+                                '<div class="d-flex justify-content-between align-items-start mb-2">' +
+                                    '<h5 class="fw-bold text-dark mb-0">' + Utils.sanitizeHTML(e.title) + '</h5>' +
+                                    statusBadge +
+                                '</div>' +
+                                '<div class="text-muted small mb-4 d-flex align-items-center gap-3">' +
+                                    '<span><span class="material-icons md-16 align-middle me-1">group</span>' + candCount + ' candidats</span>' +
+                                    '<span><span class="material-icons md-16 align-middle me-1">event</span>' + (e.closes_at ? Utils.formatDate(e.closes_at) : 'Sans fin') + '</span>' +
+                                '</div>' +
+                                '<div class="d-flex flex-wrap gap-2 mt-auto">' +
+                                    '<a href="event-dashboard.html?id=' + e.id + '" class="btn btn-sm btn-outline-success flex-fill rounded-pill"><span class="material-icons md-18 align-middle">analytics</span></a>' +
+                                    '<button class="btn btn-sm btn-outline-primary flex-fill rounded-pill" onclick="AdminApp.editEvent(\'' + e.id + '\')"><span class="material-icons md-18 align-middle">edit</span></button>' +
+                                    '<button class="btn btn-sm btn-primary flex-fill rounded-pill" onclick="AdminApp.openCandidatesModal(\'' + e.id + '\', \'' + e.title.replace(/'/g, "\\'") + '\')"><span class="material-icons md-18 align-middle">group</span> Candidats</button>' +
+                                    '<button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="AdminApp.deleteEvent(\'' + e.id + '\')"><span class="material-icons md-18 align-middle">delete</span></button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div></div>';
                 }
-                tbody.innerHTML = html;
-            }).catch(function(err) { tbody.innerHTML = '<tr><td colspan="5" class="text-danger">' + err.message + '</td></tr>'; });
+                grid.innerHTML = html;
+            }).catch(function(err) { grid.innerHTML = '<div class="col-12 text-danger text-center">' + err.message + '</div>'; });
         },
 
         saveEvent: function() {
@@ -224,6 +233,19 @@
         // ── CANDIDATES ──
         currentEventIdForCandidates: null,
 
+        copyShareLink: function(candId) {
+            var url = window.location.origin + '/candidate.html?id=' + candId;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function() {
+                    UVToast.success('Lien de vote copié !');
+                });
+            } else {
+                var t = document.createElement("textarea");
+                t.value = url; document.body.appendChild(t); t.select(); document.execCommand("copy"); document.body.removeChild(t);
+                UVToast.success('Lien de vote copié !');
+            }
+        },
+
         openCandidatesModal: function(eventId, eventTitle) {
             this.currentEventIdForCandidates = eventId;
             document.getElementById('candidatesListTitle').textContent = 'Candidats : ' + eventTitle;
@@ -239,14 +261,22 @@
                     var c = cands[i];
                     var photo = c.photo_url || 'img/default-avatar.png';
                     var candJson = encodeURIComponent(JSON.stringify(c));
-                    html += '<div class="col-md-6 col-lg-4"><div class="bg-white rounded-4 shadow-sm p-3 text-center candidate-card">' +
-                        '<img src="' + photo + '" class="candidate-photo-circle mb-3" loading="lazy">' +
-                        '<h6 class="fw-bold mb-1">' + Utils.sanitizeHTML(c.name) + '</h6>' +
-                        '<div class="text-muted small mb-3">Dossard: ' + Utils.sanitizeHTML(c.dossard || 'N/A') + ' | <span class="text-primary fw-bold">' + (c.vote_count || 0) + ' votes</span></div>' +
-                        '<div class="d-flex justify-content-center gap-2">' +
-                            '<button class="btn btn-sm btn-outline-primary rounded-pill flex-fill" onclick="AdminApp.editCandidate(\'' + candJson + '\')">Modifier</button>' +
-                            '<button class="btn btn-sm btn-outline-danger rounded-pill flex-fill" onclick="AdminApp.deleteCandidate(\'' + c.id + '\')">Supprimer</button>' +
-                        '</div></div></div>';
+                    
+                    html += '<div class="col-md-6 col-lg-4">' +
+                        '<div class="bg-white rounded-4 shadow-sm p-0 overflow-hidden text-center candidate-card position-relative">' +
+                            '<button class="btn btn-light shadow-sm btn-sm position-absolute top-0 end-0 m-2 rounded-circle" style="z-index:2" onclick="AdminApp.copyShareLink(\'' + c.id + '\')" title="Partager">' +
+                                '<span class="material-icons text-primary md-18">share</span>' +
+                            '</button>' +
+                            '<div style="height: 180px; background: url(\'' + Utils.sanitizeHTML(photo) + '\') center/cover;"></div>' +
+                            '<div class="p-3">' +
+                                '<h6 class="fw-bold mb-1">#' + Utils.sanitizeHTML(c.dossard || '?') + ' - ' + Utils.sanitizeHTML(c.name) + '</h6>' +
+                                '<div class="text-muted small mb-3"><span class="badge bg-primary bg-opacity-10 text-primary">' + (c.vote_count || 0) + ' votes</span></div>' +
+                                '<div class="d-flex justify-content-center gap-2">' +
+                                    '<button class="btn btn-sm btn-outline-primary rounded-pill flex-fill" onclick="AdminApp.editCandidate(\'' + candJson + '\')"><span class="material-icons md-16 align-middle">edit</span> Modifier</button>' +
+                                    '<button class="btn btn-sm btn-outline-danger rounded-pill flex-fill" onclick="AdminApp.deleteCandidate(\'' + c.id + '\')"><span class="material-icons md-16 align-middle">delete</span> Supprimer</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div></div>';
                 }
                 grid.innerHTML = html;
             }).catch(function(err) { grid.innerHTML = '<div class="col-12 text-danger">' + err.message + '</div>'; });
@@ -271,7 +301,15 @@
             document.getElementById('candDossard').value = c.dossard || '';
             document.getElementById('candBio').value = c.bio || '';
             document.getElementById('candPhotoPreview').innerHTML = c.photo_url ? '<img src="'+c.photo_url+'" class="rounded-circle" style="width:60px;height:60px;object-fit:cover">' : '';
-            document.getElementById('candGalleryPreview').innerHTML = '';
+            var galleryHtml = '';
+            if (c.gallery && c.gallery.length > 0) {
+                galleryHtml = '<div class="d-flex flex-wrap gap-2 mt-2">';
+                for(var i=0; i<c.gallery.length; i++) {
+                    galleryHtml += '<img src="' + c.gallery[i] + '" class="rounded" style="width:50px;height:50px;object-fit:cover">';
+                }
+                galleryHtml += '</div>';
+            }
+            document.getElementById('candGalleryPreview').innerHTML = galleryHtml;
             document.getElementById('candidateFormTitle').textContent = 'Modifier Candidat';
             var m = bootstrap.Modal.getInstance(document.getElementById('candidatesListModal'));
             if (m) m.hide();
@@ -287,6 +325,12 @@
             form.append('bio', document.getElementById('candBio').value);
             var fileInput = document.getElementById('candPhoto');
             if (fileInput.files.length > 0) form.append('photo', fileInput.files[0]);
+            var galleryInput = document.getElementById('candGallery');
+            if (galleryInput && galleryInput.files.length > 0) {
+                for (var i = 0; i < galleryInput.files.length; i++) {
+                    form.append('gallery', galleryInput.files[i]);
+                }
+            }
 
             var btn = document.getElementById('candSaveBtn');
             btn.disabled = true; btn.textContent = 'Enregistrement...';

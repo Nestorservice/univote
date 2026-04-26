@@ -78,6 +78,21 @@ func (h *CandidateHandler) CreateCandidate(c *gin.Context) {
 		}
 	}
 
+	// Upload gallery files
+	form, err := c.MultipartForm()
+	if err == nil {
+		galleryFiles := form.File["gallery"]
+		for _, f := range galleryFiles {
+			file, err := f.Open()
+			if err == nil {
+				if photoURL, uploadErr := h.saveFile(file, f.Filename); uploadErr == nil {
+					candidate.Gallery = append(candidate.Gallery, photoURL)
+				}
+				file.Close()
+			}
+		}
+	}
+
 	if err := h.DB.Create(&candidate).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, models.APIResponse{Success: false, Error: "Erreur création"})
 		return
@@ -116,6 +131,21 @@ func (h *CandidateHandler) UpdateCandidate(c *gin.Context) {
 			defer file.Close()
 			if photoURL, uploadErr := h.saveFile(file, header.Filename); uploadErr == nil {
 				candidate.PhotoURL = photoURL
+			}
+		}
+		
+		// Add new gallery images if provided
+		form, err := c.MultipartForm()
+		if err == nil {
+			galleryFiles := form.File["gallery"]
+			for _, f := range galleryFiles {
+				file, err := f.Open()
+				if err == nil {
+					if photoURL, uploadErr := h.saveFile(file, f.Filename); uploadErr == nil {
+						candidate.Gallery = append(candidate.Gallery, photoURL)
+					}
+					file.Close()
+				}
 			}
 		}
 	} else {

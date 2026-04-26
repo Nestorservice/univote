@@ -5,6 +5,8 @@ WORKDIR /app
 # Copier les fichiers du backend
 COPY backend/go.mod backend/go.sum ./backend/
 WORKDIR /app/backend
+ENV GOTOOLCHAIN=local
+ENV GOFLAGS=-mod=mod
 RUN go mod download
 
 # Copier le reste du code backend

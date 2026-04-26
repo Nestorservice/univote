@@ -133,8 +133,9 @@
             var gallery = '';
             if (candidate.gallery && candidate.gallery.length > 0) {
                 gallery = '<h6 class="fw-bold mt-4 mb-3">Galerie</h6><div class="gallery-grid mb-3">';
+                var safeGalleryJson = JSON.stringify(candidate.gallery).replace(/"/g, '&quot;');
                 for (var i = 0; i < candidate.gallery.length; i++) {
-                    gallery += '<div class="gallery-item" onclick="UVLightbox.open(' + JSON.stringify(candidate.gallery) + ',' + i + ')">' +
+                    gallery += '<div class="gallery-item" onclick="UVLightbox.open(' + safeGalleryJson + ', ' + i + ')">' +
                         '<img src="' + candidate.gallery[i] + '" alt="galerie" loading="lazy">' +
                         '</div>';
                 }

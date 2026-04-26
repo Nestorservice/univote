@@ -214,3 +214,8 @@
 .candidate-photo-circle { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .candidate-card { transition: all 0.3s ease; border: 2px solid transparent; }
 .candidate-card:hover { transform: translateY(-5px); border-color: rgba(13,110,253,0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.gallery-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.gallery-item:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; }

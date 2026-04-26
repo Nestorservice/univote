@@ -26,10 +26,11 @@
             var countdownHtml = '';
             if (status === 'open' && event.closes_at) {
                 countdownHtml =
-                    '<div class="position-absolute bottom-0 start-0 w-100 p-2 bg-dark bg-opacity-75 rounded-bottom-4 text-white small">' +
-                    '<span class="material-icons md-16 me-1 align-middle">timer</span>' +
+                    '<div class="position-absolute bottom-0 start-0 w-100 p-2 text-center" style="transform: translateY(50%);">' +
+                    '<div class="countdown-box shadow-sm">' +
+                    '<span class="material-icons countdown-icon">timer</span>' +
                     '<span class="countdown-el" data-end="' + event.closes_at + '">--:--:--</span>' +
-                    '</div>';
+                    '</div></div>';
             }
 
             return '<div class="bg-white p-3 feed-item rounded-4 shadow-sm mb-3">' +
@@ -296,10 +297,11 @@
         renderCountdown: function (closeDate) {
             var text = Utils.formatCountdown(closeDate);
             var isEnded = text === 'Terminé';
-            return '<div class="bg-white rounded-4 shadow-sm p-3 mb-4 text-center">' +
-                '<small class="text-muted d-block mb-1">Clôture dans</small>' +
-                '<h4 class="mb-0 ' + (isEnded ? 'text-muted' : 'text-danger') + '">' + text + '</h4>' +
-                '</div>';
+            return '<div class="text-center mb-4">' +
+                '<div class="countdown-box shadow" style="font-size: 1.2rem; padding: 12px 25px;">' +
+                '<span class="material-icons countdown-icon">hourglass_top</span>' +
+                '<span class="countdown-el" data-end="' + closeDate + '">' + text + '</span>' +
+                '</div></div>';
         },
 
         // ── Loading ─────────────────────────────────────────────

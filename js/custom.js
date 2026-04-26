@@ -116,3 +116,81 @@ Version: 1.2
 	});
 
 })(jQuery); // End of use strict
+
+    // Draggable Dark Mode FAB
+    jQuery(document).ready(function () {
+        if ($('#darkModeFab').length === 0) {
+            $('body').append('<div id="darkModeFab"><span class="material-icons" id="fabIcon">brightness_4</span></div>');
+        }
+        
+        var fab = document.getElementById('darkModeFab');
+        var icon = document.getElementById('fabIcon');
+        
+        // Update icon based on theme
+        function updateFabIcon() {
+            if(icon) {
+                icon.textContent = document.documentElement.classList.contains('dark') ? 'brightness_7' : 'brightness_4';
+            }
+        }
+        updateFabIcon();
+        
+        // Toggle theme on click
+        $(fab).on('click', function(e) {
+            if ($(this).hasClass('dragging')) return;
+            var isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                document.documentElement.setAttribute('class', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('class', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateFabIcon();
+            
+            // Sync with desktop toggle if exists
+            var deskToggle = document.getElementById('checkbox-desktop');
+            if (deskToggle) deskToggle.checked = !isDark;
+        });
+
+        // Make it draggable for touch devices
+        var isDragging = false;
+        var startX, startY, initialX, initialY;
+        
+        if(fab) {
+            fab.addEventListener('touchstart', function(e) {
+                var touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                var rect = fab.getBoundingClientRect();
+                initialX = rect.left;
+                initialY = rect.top;
+                isDragging = false;
+            }, {passive: true});
+            
+            fab.addEventListener('touchmove', function(e) {
+                var touch = e.touches[0];
+                var dx = touch.clientX - startX;
+                var dy = touch.clientY - startY;
+                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                    isDragging = true;
+                    $(fab).addClass('dragging');
+                    var newX = initialX + dx;
+                    var newY = initialY + dy;
+                    
+                    // Bounds
+                    newX = Math.max(0, Math.min(newX, window.innerWidth - fab.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, window.innerHeight - fab.offsetHeight));
+                    
+                    fab.style.left = newX + 'px';
+                    fab.style.top = newY + 'px';
+                    fab.style.bottom = 'auto';
+                    fab.style.right = 'auto';
+                    e.preventDefault();
+                }
+            }, {passive: false});
+            
+            fab.addEventListener('touchend', function(e) {
+                setTimeout(function() { $(fab).removeClass('dragging'); }, 100);
+            });
+        }
+    });

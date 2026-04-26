@@ -52,28 +52,41 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Titre de la video</label>
-                            <input type="text" class="form-control rounded-5" id="titleInput" placeholder="Titre de votre video" maxlength="100">
+                            <label class="form-label">Type de contenu</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contentType" id="typeVideo" value="video" checked>
+                                    <label class="form-check-label" for="typeVideo">Vidéo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contentType" id="typeImage" value="image">
+                                    <label class="form-check-label" for="typeImage">Image</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Titre</label>
+                            <input type="text" class="form-control rounded-5" id="titleInput" placeholder="Titre de votre publication" maxlength="100">
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-primary rounded-5 py-3 fw-bold" id="getUrlBtn">Obtenir l'URL d'upload</button>
+                            <button class="btn btn-primary rounded-5 py-3 fw-bold" id="getUrlBtn">Continuer</button>
                         </div>
                     </div>
                     <div id="upload-section" style="display:none;">
                         <div class="bg-white p-4 feed-item rounded-4 shadow-sm">
-                            <h6 class="mb-3 fw-bold">Uploader votre video</h6>
-                            <p class="small text-muted mb-3">Formats acceptes: MP4, H.264. Duree max: 30 secondes.</p>
+                            <h6 class="mb-3 fw-bold" id="upload-title">Uploader votre fichier</h6>
+                            <p class="small text-muted mb-3" id="upload-hint">Formats acceptes: MP4, H.264. Duree max: 30 secondes.</p>
                             <div class="text-center p-5 border rounded-4 bg-light mb-3" id="dropzone">
                                 <span class="material-icons md-32 text-muted d-block mb-2">cloud_upload</span>
-                                <p class="mb-2">Glissez votre video ici</p>
+                                <p class="mb-2">Glissez votre fichier ici</p>
                                 <p class="small text-muted mb-3">ou</p>
-                                <input type="file" accept="video/mp4" id="fileInput" hidden>
+                                <input type="file" id="fileInput" hidden>
                                 <button class="btn btn-outline-primary rounded-pill" onclick="document.getElementById('fileInput').click()">Parcourir</button>
                             </div>
                             <div class="progress mb-3" style="display:none;" id="uploadProgress">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%"></div>
                             </div>
-                            <p class="small text-muted">Apres upload, la video sera examinee par moderation IA avant d'etre publiee.</p>
+                            <p class="small text-muted">Apres upload, le contenu sera examine par moderation IA avant d'etre publie.</p>
                         </div>
                     </div>
                 </div>
@@ -94,6 +107,7 @@
         "use strict";
         
         var uploadData = null;
+        var selectedType = 'video';
         
         function loadEvents() {
             var select = document.getElementById('eventSelect');
@@ -119,6 +133,7 @@
             
             var eventId = document.getElementById('eventSelect').value;
             var title = document.getElementById('titleInput').value.trim();
+            selectedType = document.querySelector('input[name="contentType"]:checked').value;
             
             if (!eventId) {
                 Utils.showError('Veuillez selectionner un evenement');
@@ -132,10 +147,13 @@
             var btn = document.getElementById('getUrlBtn');
             Utils.disableButton(btn);
             
-            API.requestUpload(eventId, null, pseudo, title).then(function (data) {
+            API.requestUpload(eventId, null, pseudo, title, selectedType).then(function (data) {
                 uploadData = data;
                 document.getElementById('upload-section').style.display = 'block';
-                Utils.showInfo('URL d\'upload obtenue');
+                document.getElementById('upload-title').textContent = selectedType === 'video' ? 'Uploader votre vidéo' : 'Uploader votre image';
+                document.getElementById('upload-hint').textContent = selectedType === 'video' ? 'Formats acceptés: MP4, MOV. Max 30s.' : 'Formats acceptés: JPG, PNG, WEBP.';
+                document.getElementById('fileInput').accept = selectedType === 'video' ? 'video/*' : 'image/*';
+                Utils.showInfo('Prêt pour l\'upload');
                 Utils.enableButton(btn);
             }).catch(function (error) {
                 Utils.enableButton(btn);
@@ -157,26 +175,37 @@
             formData.append('timestamp', uploadData.timestamp);
             formData.append('api_key', uploadData.api_key);
             formData.append('folder', uploadData.folder);
+            formData.append('context', 'pending_video_id=' + uploadData.pending_video_id);
             
-            fetch(uploadData.upload_url, {
-                method: 'POST',
-                body: formData,
-                xhr: function () {
-                    var xhr = new XMLHttpRequest();
-                    xhr.upload.addEventListener('progress', function (e) {
-                        var percent = Math.round(e.loaded / e.total * 100);
-                        bar.style.width = percent + '%';
-                    });
-                    return xhr;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', uploadData.upload_url, true);
+            
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    var percent = Math.round((e.loaded / e.total) * 100);
+                    bar.style.width = percent + '%';
+                    bar.textContent = percent + '%';
                 }
-            }).then(function () {
-                Utils.showSuccess('Video upload! Elle sera visible apres moderation.');
-                setTimeout(function () {
-                    window.location.href = 'video-feed.html?event=' + document.getElementById('eventSelect').value;
-                }, 2000);
-            }).catch(function () {
-                Utils.showError('Erreur upload');
-            });
+            };
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    Utils.showSuccess('Upload réussi ! Publication après modération.');
+                    setTimeout(function () {
+                        window.location.href = 'video-feed.html?event=' + document.getElementById('eventSelect').value;
+                    }, 2000);
+                } else {
+                    var err = 'Erreur serveur';
+                    try { err = JSON.parse(xhr.responseText).error.message; } catch(e){}
+                    Utils.showError('Erreur: ' + err);
+                }
+            };
+            
+            xhr.onerror = function() {
+                Utils.showError('Erreur réseau lors de l\'upload');
+            };
+            
+            xhr.send(formData);
         }
         
         document.getElementById('getUrlBtn').addEventListener('click', requestUploadUrl);

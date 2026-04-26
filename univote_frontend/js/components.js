@@ -121,6 +121,9 @@
                             '<span class="small text-muted">(' + percent + '%)</span>' +
                         '</div>' +
                         '<div class="vote-progress"><div class="vote-progress-bar" style="width:' + percent + '%"></div></div>' +
+                        (candidate.gallery && candidate.gallery.length > 0 ? 
+                            '<div class="mt-2"><button class="btn btn-sm btn-outline-primary rounded-pill px-2 py-0" onclick="event.preventDefault(); UVLightbox.open(' + JSON.stringify(candidate.gallery).replace(/"/g, '&quot;') + ', 0)">' +
+                            '<small class="d-flex align-items-center"><span class="material-icons md-14 me-1">collections</span> Galerie (' + candidate.gallery.length + ')</small></button></div>' : '') +
                     '</div>' +
                     '<span class="material-icons text-muted">chevron_right</span>' +
                 '</div>' +
@@ -170,11 +173,14 @@
 
         renderVideoCard: function (video, eventId) {
             var thumbnail = video.thumbnail_url || 'img/default-banner.jpg';
+            var icon = video.type === 'image' ? 'image' : 'smart_display';
+            var typeLabel = video.type === 'image' ? 'Image' : 'Vidéo';
+
             return '<div class="bg-white p-3 feed-item rounded-4 shadow-sm mb-3">' +
                 '<div class="d-flex align-items-center mb-2">' +
-                    '<span class="material-icons md-36 text-primary me-2">smart_display</span>' +
+                    '<span class="material-icons md-36 text-primary me-2">' + icon + '</span>' +
                     '<div class="flex-grow-1">' +
-                        '<h6 class="mb-0">' + Utils.sanitizeHTML(video.title || 'Vidéo') + '</h6>' +
+                        '<h6 class="mb-0">' + Utils.sanitizeHTML(video.title || typeLabel) + '</h6>' +
                         '<small class="text-muted">Par ' + Utils.sanitizeHTML(video.uploader_pseudo || video.pseudo || 'Anonyme') + '</small>' +
                     '</div>' +
                 '</div>' +
@@ -207,7 +213,9 @@
             var thumbnail = video.thumbnail_url || 'img/default-banner.jpg';
             var videoId = video.id;
             var pseudo = Utils.sanitizeHTML(video.uploader_pseudo || video.pseudo || 'Anonyme');
-            var title = Utils.sanitizeHTML(video.title || 'Vidéo');
+            var typeLabel = video.type === 'image' ? 'Image' : 'Vidéo';
+            var title = Utils.sanitizeHTML(video.title || typeLabel);
+            var icon = video.type === 'image' ? 'image' : 'smart_display';
             var timeAgo = Utils.formatDate(video.created_at);
             var likes = Utils.formatNumber(video.like_count || 0);
             var commentsCount = Utils.formatNumber(video.comment_count || 0);
@@ -230,9 +238,9 @@
                                 '<p class="mb-3 text-dark fs-6">' + title + '</p>' +
                                 '<a href="video-player.html?id=' + videoId + '&event=' + eventId + '" class="text-decoration-none d-block position-relative">' +
                                     '<img src="' + thumbnail + '" class="img-fluid rounded-4 mb-3 w-100 border shadow-sm" style="max-height:400px;object-fit:cover;" alt="post-media" loading="lazy">' +
-                                    '<div class="position-absolute top-50 start-50 translate-middle">' +
+                                    (video.type === 'image' ? '' : '<div class="position-absolute top-50 start-50 translate-middle">' +
                                         '<span class="material-icons text-white bg-dark bg-opacity-50 rounded-circle p-2 shadow" style="font-size: 48px;">play_arrow</span>' +
-                                    '</div>' +
+                                    '</div>') +
                                 '</a>' +
                                 '<div class="d-flex align-items-center justify-content-between mb-2 px-2">' +
                                     '<button class="btn btn-link p-0 text-muted text-decoration-none d-flex align-items-center social-like-btn" data-video="' + videoId + '">' +

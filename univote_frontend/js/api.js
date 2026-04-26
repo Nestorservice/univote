@@ -205,11 +205,12 @@
          * POST /upload/request
          * Body: { event_id, candidate_id?, pseudo, title }
          */
-        requestUpload: function (eventId, candidateId, pseudo, title) {
+        requestUpload: function (eventId, candidateId, pseudo, title, type) {
             var body = {
                 event_id: eventId,
                 pseudo: pseudo,
-                title: title || ''
+                title: title || '',
+                type: type || 'video'
             };
             if (candidateId) body.candidate_id = candidateId;
             return request('POST', '/upload/request', body).then(function (json) {

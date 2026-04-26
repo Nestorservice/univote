@@ -30,6 +30,7 @@ type CreateVideoDTO struct {
 	CandidateID string `json:"candidate_id,omitempty"`
 	Pseudo      string `json:"pseudo"`
 	Title       string `json:"title"`
+	Type        string `json:"type"`
 }
 
 // CreatePendingVideo insère une vidéo en base avec le statut 'pending_moderation'.
@@ -43,7 +44,12 @@ func (s *VideoService) CreatePendingVideo(dto CreateVideoDTO) (*models.Video, er
 		EventID:        eventUUID,
 		UploaderPseudo: dto.Pseudo,
 		Title:          dto.Title,
+		Type:           dto.Type,
 		Status:         models.StatusPendingModeration,
+	}
+
+	if video.Type == "" {
+		video.Type = "video"
 	}
 
 	if dto.CandidateID != "" {

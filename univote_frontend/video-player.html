@@ -119,12 +119,17 @@
         
         function renderVideo(video) {
             var container = document.getElementById('video-player-container');
-            container.innerHTML = '<div class="video-player-container">' +
-                '<video controls poster="' + (video.thumbnail_url || 'img/post1.png') + '" style="width:100%;">' +
-                '<source src="' + video.cloudinary_url + '" type="video/mp4">' +
-                'Votre navigateur ne supporte pas la lecture video.' +
-                '</video>' +
-                '</div>';
+            var mediaHtml = '';
+            if (video.type === 'image') {
+                mediaHtml = '<img src="' + video.cloudinary_url + '" class="img-fluid rounded w-100 shadow-sm" style="max-height:80vh;object-fit:contain;" alt="image">';
+            } else {
+                mediaHtml = '<video controls poster="' + (video.thumbnail_url || 'img/post1.png') + '" class="w-100 rounded shadow-sm">' +
+                    '<source src="' + video.cloudinary_url + '" type="video/mp4">' +
+                    'Votre navigateur ne supporte pas la lecture video.' +
+                    '</video>';
+            }
+
+            container.innerHTML = '<div class="media-container mb-3">' + mediaHtml + '</div>';
             
             var actions = document.getElementById('video-actions');
             actions.innerHTML = '<div class="d-flex align-items-center justify-content-between">' +

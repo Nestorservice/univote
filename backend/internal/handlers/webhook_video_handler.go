@@ -54,60 +54,71 @@ func (h *WebhookVideoHandler) HandleVideoReady(c *gin.Context) {
 	}
 
 	// Récupérer la vidéo correspondante en BDD
-	// Cloudinary retourne le PublicID
 	var video models.Video
-	if err := h.VideoService.DB.First(&video, "cloudinary_public_id = ?", payload.PublicID).Error; err != nil {
-		// Il se peut que le PublicID ne soit pas encore enregistré si le webhook arrive trop vite,
-		// ou bien on utilise le pending_video_id généré.
-		// Dans notre architecture: on passe l'ID de la vidéo généré dans un tag (context) 
-		// ou le public_id est stocké plus tôt.
-		// NOTE: Comme le public_id n'est connu qu'après l'upload complet, 
-		// Cloudinary permet d'attacher un "context" ou un tag à la vidéo (ex: "video_id=123").
-		// Pour faire simple ici et respecter le cahier des charges : on suppose qu'on récupère 
-		// par le public_id qui a été potentiellement mis à jour lors de l'upload.
-		// Mais si public_id n'existe pas, on cherche par un autre moyen ou on ignore.
-	}
+	videoFound := false
 
-	// Si la vidéo n'est pas trouvée par public_id, c'est peut-être un webhook "upload" qui contient 
-	// le tags ["pending_id:UUID"]
-	// Pour l'implémentation exacte, on met juste un avertissement et on essaie de mettre à jour 
-	// la vidéo qui a cloudinary_public_id = payload.PublicID
-
-	// Vérification de la durée de la vidéo
-	maxDurationStr := os.Getenv("VIDEO_MAX_DURATION_SECONDS")
-	maxDuration, _ := strconv.ParseFloat(maxDurationStr, 64)
-	if maxDuration == 0 {
-		maxDuration = 120 // Fallback
-	}
-
-	if payload.Duration > maxDuration {
-		// Rejet automatique
-		if video.ID.String() != "" && video.ID.String() != "00000000-0000-0000-0000-000000000000" {
-			h.VideoService.RejectVideo(c.Request.Context(), video.ID.String(), "video_too_long")
+	// 1. Essayer par pending_video_id (depuis le context Cloudinary)
+	if payload.Context.Custom.PendingVideoID != "" {
+		if err := h.VideoService.DB.First(&video, "id = ?", payload.Context.Custom.PendingVideoID).Error; err == nil {
+			videoFound = true
 		}
-		c.JSON(http.StatusOK, gin.H{"status": "rejected_too_long"})
+	}
+
+	// 2. Fallback par public_id si non trouvé
+	if !videoFound {
+		if err := h.VideoService.DB.First(&video, "cloudinary_public_id = ?", payload.PublicID).Error; err == nil {
+			videoFound = true
+		}
+	}
+
+	if !videoFound {
+		log.Printf("⚠️ Webhook: vidéo non trouvée (PublicID: %s, PendingID: %s)", payload.PublicID, payload.Context.Custom.PendingVideoID)
+		// On ne peut pas continuer sans vidéo
+		c.JSON(http.StatusOK, gin.H{"status": "ignored_no_video"})
 		return
+	}
+
+	// Mettre à jour le PublicID s'il n'est pas encore défini
+	if video.CloudinaryPublicID == "" {
+		h.VideoService.DB.Model(&video).Update("cloudinary_public_id", payload.PublicID)
+	}
+
+	// Vérification de la durée (uniquement pour les vidéos)
+	if video.Type == "video" && payload.Duration > 0 {
+		maxDurationStr := os.Getenv("VIDEO_MAX_DURATION_SECONDS")
+		maxDuration, _ := strconv.ParseFloat(maxDurationStr, 64)
+		if maxDuration == 0 {
+			maxDuration = 120
+		}
+		if payload.Duration > maxDuration {
+			h.VideoService.RejectVideo(c.Request.Context(), video.ID.String(), "video_too_long")
+			c.JSON(http.StatusOK, gin.H{"status": "rejected_too_long"})
+			return
+		}
 	}
 
 	// 4. Traitement selon le type de notification
 	if payload.NotificationType == "moderation" {
 		approved, reason := h.CldService.ParseModerationResult(&payload)
-		if video.ID.String() != "" && video.ID.String() != "00000000-0000-0000-0000-000000000000" {
-			if approved {
-				h.VideoService.ApproveVideo(c.Request.Context(), video.ID.String(), models.JSON{"reason": "ai_approved"})
-			} else {
-				h.VideoService.RejectVideo(c.Request.Context(), video.ID.String(), reason)
-			}
+		// Si c'est une image, on met à jour l'URL immédiatement car il n'y a pas d'étape 'eager'
+		if video.Type == "image" {
+			h.VideoService.DB.Model(&video).Update("cloudinary_url", payload.SecureURL)
+		}
+
+		if approved {
+			h.VideoService.ApproveVideo(c.Request.Context(), video.ID.String(), models.JSON{"reason": "ai_approved"})
+		} else {
+			h.VideoService.RejectVideo(c.Request.Context(), video.ID.String(), reason)
 		}
 	} else if payload.NotificationType == "eager" {
-		if video.ID.String() != "" && video.ID.String() != "00000000-0000-0000-0000-000000000000" && len(payload.Eager) > 0 {
-			h.VideoService.DB.Model(&video).Updates(map[string]interface{}{
-				"cloudinary_url": payload.Eager[0].SecureURL,
-			})
+		if len(payload.Eager) > 0 {
+			h.VideoService.DB.Model(&video).Update("cloudinary_url", payload.Eager[0].SecureURL)
 		}
 	} else if payload.NotificationType == "upload" {
-		// Mettre à jour la vidéo en base avec l'URL originale au cas où, ou le public ID
-		// Si Cloudinary envoie context.custom.pending_video_id, on l'utilise.
+		// Pour les images, l'URL est dispo dès l'upload
+		if video.Type == "image" {
+			h.VideoService.DB.Model(&video).Update("cloudinary_url", payload.SecureURL)
+		}
 	}
 
 	// Toujours répondre 200 OK pour Cloudinary

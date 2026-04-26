@@ -57,7 +57,10 @@ type UploadSignatureResult struct {
 }
 
 // GenerateSignedUploadURL crée une signature d'upload pour un client avec les paramètres de modération.
-func (s *CloudinaryService) GenerateSignedUploadURL(eventID string) (*UploadSignatureResult, error) {
+func (s *CloudinaryService) GenerateSignedUploadURL(eventID string, resType string, videoID string) (*UploadSignatureResult, error) {
+	if resType == "" {
+		resType = "video"
+	}
 	timestamp := time.Now().Unix()
 	folder := fmt.Sprintf("univote/events/%s", eventID)
 
@@ -66,11 +69,17 @@ func (s *CloudinaryService) GenerateSignedUploadURL(eventID string) (*UploadSign
 	paramsToSign.Add("folder", folder)
 	paramsToSign.Add("timestamp", strconv.FormatInt(timestamp, 10))
 	paramsToSign.Add("upload_preset", s.UploadPreset)
-	paramsToSign.Add("resource_type", "video")
-	paramsToSign.Add("transformation", "q_auto,f_mp4,vc_h264,du_30") // Qualité auto, MP4, H.264, coupe à 30s
-	paramsToSign.Add("moderation", "aws_rek")                    // IA AWS Rekognition intégrée
+	paramsToSign.Add("resource_type", resType)
+	paramsToSign.Add("moderation", "aws_rek") // IA AWS Rekognition intégrée
+	paramsToSign.Add("context", fmt.Sprintf("pending_video_id=%s", videoID))
 	paramsToSign.Add("notification_url", fmt.Sprintf("%s/api/v1/webhook/video-ready", s.BackendURL))
-	paramsToSign.Add("eager", "sp_hd/m3u8") // Génère le flux HLS
+
+	if resType == "video" {
+		paramsToSign.Add("transformation", "q_auto,f_mp4,vc_h264,du_30") // Qualité auto, MP4, H.264, coupe à 30s
+		paramsToSign.Add("eager", "sp_hd/m3u8")                         // Génère le flux HLS
+	} else {
+		paramsToSign.Add("transformation", "q_auto,f_auto") // Qualité et format auto pour images
+	}
 
 	// Signer les paramètres avec l'API Secret
 	signature, err := api.SignParameters(paramsToSign, s.APISecret)
@@ -78,15 +87,15 @@ func (s *CloudinaryService) GenerateSignedUploadURL(eventID string) (*UploadSign
 		return nil, fmt.Errorf("failed to sign upload parameters: %w", err)
 	}
 
-	uploadURL := fmt.Sprintf("https://api.cloudinary.com/v1_1/%s/video/upload", s.CloudName)
+	uploadURL := fmt.Sprintf("https://api.cloudinary.com/v1_1/%s/%s/upload", s.CloudName, resType)
 
 	return &UploadSignatureResult{
-		Signature:  signature,
-		Timestamp:  timestamp,
-		APIKey:     s.APIKey,
-		CloudName:  s.CloudName,
-		UploadURL:  uploadURL,
-		Folder:     folder,
+		Signature: signature,
+		Timestamp: timestamp,
+		APIKey:    s.APIKey,
+		CloudName: s.CloudName,
+		UploadURL: uploadURL,
+		Folder:    folder,
 	}, nil
 }
 
@@ -119,6 +128,11 @@ type WebhookPayload struct {
 		SecureURL string `json:"secure_url"`
 	} `json:"eager"`
 	Duration float64 `json:"duration"`
+	Context  struct {
+		Custom struct {
+			PendingVideoID string `json:"pending_video_id"`
+		} `json:"custom"`
+	} `json:"context"`
 }
 
 // ParseModerationResult analyse le payload du webhook pour extraire le résultat de modération.

@@ -25,6 +25,7 @@ type Video struct {
 	DurationSeconds    int        `json:"duration_seconds,omitempty"`
 	Title              string     `gorm:"type:varchar(255)" json:"title,omitempty"`
 	Status             string     `gorm:"type:varchar(30);default:'pending_moderation'" json:"status"`
+	Type               string     `gorm:"type:varchar(20);default:'video'" json:"type"` // "video" ou "image"
 	ModerationResult   *JSON      `gorm:"type:jsonb" json:"moderation_result,omitempty"`
 	LikeCount          int        `gorm:"default:0" json:"like_count"`
 	CommentCount       int        `gorm:"default:0" json:"comment_count"`
@@ -69,6 +70,7 @@ type VideoMeta struct {
 	LikeCount     int    `json:"like_count"`
 	CommentCount  int    `json:"comment_count"`
 	Status        string `json:"status"`
+	Type          string `json:"type"`
 	CandidateID   string `json:"candidate_id,omitempty"`
 	CandidateName string `json:"candidate_name,omitempty"`
 	CreatedAt     int64  `json:"created_at"` // Unix timestamp

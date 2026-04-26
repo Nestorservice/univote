@@ -1,5 +1,5 @@
 # Étape 1 : Builder le backend Go
-FROM golang:1.23-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,6 @@ COPY backend/go.mod backend/go.sum ./backend/
 WORKDIR /app/backend
 
 # Empêcher le build de mettre à jour le toolchain ou go.mod
-ENV GOTOOLCHAIN=local
 RUN go mod download
 
 # Copier le reste du code backend

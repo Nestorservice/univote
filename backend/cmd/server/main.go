@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/univote/backend/internal/cache"
@@ -88,6 +89,8 @@ func main() {
 	router.Use(middleware.RequestLogger())
 	router.Use(middleware.CORSMiddleware(cfg.FrontendURL))
 	router.Use(middleware.SecurityHeaders())
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
+	router.Use(middleware.StaticCacheMiddleware())
 
 	// Servir les fichiers uploadés
 	router.Static("/uploads", cfg.UploadDir)

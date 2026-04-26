@@ -10,6 +10,7 @@ RUN go mod download
 # Copier le reste du code backend
 COPY backend/ ./
 # Compiler l'application Go
+RUN go get github.com/gin-contrib/gzip
 RUN CGO_ENABLED=0 GOOS=linux go build -o /univote-api ./cmd/server
 
 # Étape 2 : Image finale légère

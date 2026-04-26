@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Connexion - UNI-VOTE</title>
+    <meta name="description" content="Connexion pseudo UNI-VOTE">
+    
+    <!-- Bootstrap CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Icons -->
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom Css -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <!-- Content -->
+    <div class="p-5 text-center col-md-6 col-lg-4 col-11 bg-white rounded-4 shadow-sm">
+        <a href="index.html">
+            <img src="img/logo.png" class="img-fluid mb-4" alt="UNI-VOTE Logo" style="max-width: 150px;">
+        </a>
+        <div class="text-center pb-3">
+            <h3 class="fw-bold text-black mt-2">Choisissez un pseudo</h3>
+            <p class="mb-4 text-muted">Votre identité reste secrète. Ce pseudo sert uniquement à interagir avec la plateforme.</p>
+            
+            <form id="loginForm">
+                <div class="form-floating mb-4">
+                    <input type="text" class="form-control rounded-5" id="pseudoInput" placeholder="Votre pseudo" required minlength="3" maxlength="20">
+                    <label for="pseudoInput">Pseudo (ex: EtudiantPro)</label>
+                    <div class="invalid-feedback text-start ms-3">
+                        Veuillez entrer un pseudo valide (3 à 20 caractères).
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 px-4 shadow-sm pulse-animation fw-bold">
+                    Continuer <span class="material-icons align-middle ms-1 md-18">arrow_forward</span>
+                </button>
+            </form>
+        </div>
+        <p class="small text-muted mt-3 mb-0">En continuant, vous acceptez de rester anonyme et courtois.</p>
+    </div>
+
+    <!-- Jquery Js -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- Bootstrap Bundle Js -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Core UNI-VOTE -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- Login Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Si on a déjà un pseudo, on redirige
+            if (getPseudo()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const form = document.getElementById('loginForm');
+            const input = document.getElementById('pseudoInput');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pseudo = input.value.trim();
+                
+                if (pseudo.length < 3) {
+                    input.classList.add('is-invalid');
+                    return;
+                }
+                
+                input.classList.remove('is-invalid');
+                
+                // Enregistrer le pseudo
+                setPseudo(pseudo);
+                
+                // Rediriger vers l'URL de retour (ou l'accueil)
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('return');
+                window.location.href = returnUrl ? decodeURIComponent(returnUrl) : 'index.html';
+            });
+
+            // Retirer l'erreur en tapant
+            input.addEventListener('input', () => {
+                input.classList.remove('is-invalid');
+            });
+        });
+    </script>
+</body>
+</html>

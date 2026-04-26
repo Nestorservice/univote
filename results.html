@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Resultats en Direct - UNI-VOTE</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="theme-switch-wrapper ms-3">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox">
+            <span class="slider round"></span>
+            <i class="icofont-ui-brightness"></i>
+        </label>
+        <em>Mode Sombre</em>
+    </div>
+    <div class="web-none d-flex align-items-center px-3 pt-3">
+        <a href="events.html" class="text-decoration-none">
+            <img src="img/logo.png" class="img-fluid logo-mobile" alt="logo">
+        </a>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light bg-white bg-opacity-75 rounded-circle p-2 border-0 shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
+                <span class="material-icons text-dark">more_vert</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 mt-2">
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><span class="material-icons md-18 me-2 text-muted">info</span>À propos</a></li>
+                <li><a class="dropdown-item py-2 d-flex align-items-center" href="faq.html"><span class="material-icons md-18 me-2 text-muted">help_outline</span>FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="container">
+            <div class="row position-relative">
+                <main class="col col-xl-6 order-xl-2 col-lg-12 order-lg-1 col-md-12 col-sm-12 col-12">
+                    <div class="main-content">
+                        <div class="mb-4 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <a href="event-detail.html" class="material-icons text-dark text-decoration-none me-3">arrow_back</a>
+                                <p class="ms-2 mb-0 fw-bold text-body fs-6" id="event-title">Chargement...</p>
+                            </div>
+                            <span class="live-indicator"><span class="badge bg-danger">LIVE</span></span>
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-4 mb-4" id="countdown-container">
+                        </div>
+                        <div class="bg-white rounded-4 shadow-sm p-4">
+                            <h5 class="mb-4 fw-bold">Resultats en direct</h5>
+                            <div id="results-bar"></div>
+                        </div>
+                    </div>
+                </main>
+                <aside class="col col-xl-3 order-xl-1 col-lg-6 order-lg-2 col-md-6 col-sm-6 col-12">
+                    <div class="p-2 bg-light offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="ps-0 m-none fix-sidebar">
+                        <div class="sidebar-nav mb-3">
+                            <div class="pb-4 mb-4">
+                                <a href="events.html" class="text-decoration-none">
+                                    <img src="img/logo.png" class="img-fluid logo" alt="logo">
+                                </a>
+                            </div>
+                            <ul class="navbar-nav justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a href="events.html" class="nav-link"><span class="material-icons me-3">how_to_vote</span> <span>Evenements</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        
+        var eventId = null;
+        var currentEvent = null;
+        var countdownTimer = null;
+        
+        function getEventId() {
+            return new URLSearchParams(window.location.search).get('id');
+        }
+        
+        function loadEvent() {
+            eventId = getEventId();
+            if (!eventId) {
+                window.location.href = 'events.html';
+                return;
+            }
+            
+            API.getEvent(eventId).then(function (data) {
+                if (!data.show_results) {
+                    window.location.href = 'event-detail.html?id=' + eventId;
+                    return;
+                }
+                currentEvent = data;
+                document.getElementById('event-title').textContent = data.title;
+                renderResults(data);
+                connectWebSocket();
+                startCountdown();
+            }).catch(function (error) {
+                Utils.showError('Erreur: ' + error.message);
+            });
+        }
+        
+        function renderResults(event) {
+            var totalVotes = event.candidates.reduce(function (sum, c) {
+                return sum + (c.vote_count || 0);
+            }, 0);
+            
+            var sorted = event.candidates.slice().sort(function (a, b) {
+                return (b.vote_count || 0) - (a.vote_count || 0);
+            });
+            
+            var html = '';
+            for (var i = 0; i < sorted.length; i++) {
+                html += Components.renderResultsBar(sorted[i], totalVotes);
+            }
+            
+            html += '<div class="text-center mt-4 text-muted">Total: ' + Utils.formatNumber(totalVotes) + ' voix</div>';
+            document.getElementById('results-bar').innerHTML = html;
+        }
+        
+        function startCountdown() {
+            if (!currentEvent || currentEvent.status !== 'open') return;
+            
+            var container = document.getElementById('countdown-container');
+            container.innerHTML = '';
+            container.innerHTML = Components.renderCountdown(currentEvent.closes_at);
+            
+            if (countdownTimer) clearInterval(countdownTimer);
+            countdownTimer = setInterval(function () {
+                container.innerHTML = Components.renderCountdown(currentEvent.closes_at);
+            }, 1000);
+        }
+        
+        function connectWebSocket() {
+            WebSocketClient.connect(eventId);
+            WebSocketClient.onConnect = function () {
+                Utils.showInfo('Connecte au direct');
+            };
+            WebSocketClient.onDisconnect = function () {
+                Utils.showError('Connexion perdue. Reconnexion...');
+            };
+            WebSocketClient.onMessage = function (data) {
+                for (var i = 0; i < currentEvent.candidates.length; i++) {
+                    if (currentEvent.candidates[i].id === data.candidate_id) {
+                        currentEvent.candidates[i].vote_count = data.vote_count;
+                    }
+                }
+                renderResults(currentEvent);
+            };
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadEvent);
+        
+    })();
+    </script>
+</body>
+</html>

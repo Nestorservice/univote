@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>Paiement du Vote - UNI-VOTE</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icofont -->
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <!-- Custom Css -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Mobile Header -->
+    <div class="web-none d-flex align-items-center px-3 pt-3 mb-4">
+        <a href="javascript:history.back()" class="material-icons text-dark text-decoration-none me-3">arrow_back</a>
+        <h5 class="fw-bold mb-0 text-body">Confirmation du Vote</h5>
+    </div>
+
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-5">
+                
+                <!-- Résumé du Choix -->
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4 text-center">
+                    <h6 class="text-muted small mb-2">Vous vous apprêtez à voter pour :</h6>
+                    <div id="candidateDetails" class="d-none">
+                        <img src="img/default-avatar.png" id="candidatePhoto" class="img-fluid rounded-circle border border-3 border-primary shadow-sm mb-3" style="width: 90px; height: 90px; object-fit: cover;">
+                        <h4 class="fw-bold text-dark mb-1" id="candidateName">Nom du Candidat</h4>
+                        <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 mb-3">Prix: <span id="votePrice">...</span> FCFA</span>
+                    </div>
+                    <!-- Skeleton -->
+                    <div id="paymentSkeleton">
+                        <div class="skeleton-card skeleton rounded-circle mx-auto mb-3" style="width: 90px; height: 90px;"></div>
+                        <div class="skeleton-card skeleton mx-auto mb-2" style="height: 20px; width: 60%;"></div>
+                        <div class="skeleton-card skeleton mx-auto mb-3" style="height: 30px; width: 40%; border-radius: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de Paiement -->
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <h6 class="fw-bold text-dark mb-3">Informations de Paiement Mobile</h6>
+                    <form id="paymentForm">
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Numéro de Téléphone (Mobile Money)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="icofont-smart-phone"></i></span>
+                                <input type="tel" class="form-control border-start-0 ps-0 form-control-lg fw-bold" id="phoneNumber" placeholder="Ex: 6XXXXXXXX" required pattern="[0-9]{9}" maxlength="9">
+                            </div>
+                        </div>
+
+                        <!-- Réseau détecté -->
+                        <div class="mb-4 text-center p-3 rounded-4 bg-light border" id="networkContainer">
+                            <small class="text-muted d-block mb-1">Réseau détecté :</small>
+                            <span class="fw-bold text-secondary" id="networkLabel">En attente de saisie...</span>
+                        </div>
+
+                        <!-- Info Sécurité -->
+                        <div class="d-flex align-items-center mb-4 text-muted small bg-success bg-opacity-10 p-3 rounded-4">
+                            <span class="material-icons text-success me-2">lock</span>
+                            <span>Paiement 100% sécurisé via <b>Notch Pay</b>. Un SMS push sera envoyé sur votre téléphone pour valider.</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold fs-5 pulse-animation" id="btnSubmitPayment" disabled>
+                            Confirmer & Payer <i class="icofont-check-circled ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Zone d'attente (masquée par défaut) -->
+                <div id="waitingZone" class="bg-white rounded-4 shadow-sm p-4 text-center d-none">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="fw-bold">Veuillez valider le paiement</h5>
+                    <p class="text-muted small">Consultez votre téléphone et tapez votre code PIN Mobile Money pour confirmer l'opération.</p>
+                    <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated w-100" role="progressbar"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery Js -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    
+    <!-- Core UNI-VOTE -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- Page Logic -->
+    <script src="js/pages/payment.js"></script>
+</body>
+</html>

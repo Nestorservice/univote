@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net/url"
 	"strconv"
 	"time"

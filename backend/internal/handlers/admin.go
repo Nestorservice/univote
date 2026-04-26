@@ -89,6 +89,77 @@ func (h *AdminHandler) Dashboard(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Data: stats})
 }
 
+// EventDashboard retourne les stats détaillées d'un scrutin.
+// GET /api/v1/admin/events/:id/dashboard
+func (h *AdminHandler) EventDashboard(c *gin.Context) {
+	eventID := c.Param("id")
+
+	var event models.Event
+	if err := h.DB.Preload("Candidates", func(db *gorm.DB) *gorm.DB {
+		return db.Order("vote_count DESC")
+	}).Where("id = ?", eventID).First(&event).Error; err != nil {
+		c.JSON(http.StatusNotFound, models.APIResponse{Success: false, Error: "Événement introuvable"})
+		return
+	}
+
+	// Total votes
+	var totalVotes int64
+	for _, cand := range event.Candidates {
+		totalVotes += int64(cand.VoteCount)
+	}
+
+	// Revenue for this event
+	var totalRevenue int64
+	h.DB.Model(&models.Transaction{}).Where("event_id = ? AND status = ?", eventID, "success").
+		Select("COALESCE(SUM(amount), 0)").Scan(&totalRevenue)
+
+	// Votes by hour
+	var votesByHour []struct {
+		Hour  time.Time
+		Votes int64
+	}
+	h.DB.Table("transactions").
+		Select("date_trunc('hour', created_at) as hour, COALESCE(SUM(vote_count),0) as votes").
+		Where("event_id = ? AND status = ?", eventID, "success").
+		Group("hour").Order("hour ASC").Find(&votesByHour)
+
+	hourlyData := make([]map[string]interface{}, len(votesByHour))
+	for i, v := range votesByHour {
+		hourlyData[i] = map[string]interface{}{"hour": v.Hour.Format("01/02 15:04"), "votes": v.Votes}
+	}
+
+	// Recent activity
+	var recentTx []models.Transaction
+	h.DB.Preload("Candidate").Where("event_id = ? AND status = ?", eventID, "success").
+		Order("created_at DESC").Limit(10).Find(&recentTx)
+
+	activity := make([]map[string]interface{}, len(recentTx))
+	for i, tx := range recentTx {
+		candName := "?"
+		if tx.Candidate != nil {
+			candName = tx.Candidate.Name
+		}
+		activity[i] = map[string]interface{}{
+			"candidate": candName,
+			"votes":     tx.VoteCount,
+			"amount":    tx.Amount,
+			"time":      tx.CreatedAt.Format("15:04:05"),
+		}
+	}
+
+	c.JSON(http.StatusOK, models.APIResponse{
+		Success: true,
+		Data: gin.H{
+			"event":         event,
+			"total_votes":   totalVotes,
+			"total_revenue": totalRevenue,
+			"candidates":    event.Candidates,
+			"votes_by_hour": hourlyData,
+			"recent_activity": activity,
+		},
+	})
+}
+
 // ListTransactions retourne la liste des transactions avec filtres.
 // GET /api/v1/admin/transactions
 func (h *AdminHandler) ListTransactions(c *gin.Context) {

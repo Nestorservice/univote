@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <title>UNI-VOTE - Dashboard Scrutin</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="vendor/icons/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/univote.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .chart-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: var(--uv-shadow); }
+        .activity-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .activity-item:last-child { border-bottom: none; }
+        .gauge-container { position: relative; width: 160px; height: 160px; margin: 0 auto; }
+        .gauge-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .gauge-text .value { font-size: 2rem; font-weight: 800; color: var(--uv-primary); }
+        .gauge-text .label { font-size: 0.75rem; color: #6c757d; }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Top Bar -->
+    <div class="bg-white shadow-sm py-3 px-4 d-flex align-items-center mb-4">
+        <a href="admin.html" class="btn btn-light rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px">
+            <span class="material-icons">arrow_back</span>
+        </a>
+        <div>
+            <h5 class="fw-bold mb-0" id="dashTitle">Dashboard Scrutin</h5>
+            <small class="text-muted" id="dashSubtitle">Chargement...</small>
+        </div>
+        <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-outline-primary rounded-pill btn-sm" onclick="loadDashboard()">
+                <span class="material-icons md-16 align-middle">refresh</span> Actualiser
+            </button>
+            <button class="btn btn-outline-success rounded-pill btn-sm" onclick="exportCSV()">
+                <span class="material-icons md-16 align-middle">download</span> CSV
+            </button>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4">
+        <!-- KPI Row -->
+        <div class="row g-3 mb-4" id="kpiRow">
+            <div class="col-6 col-lg-3"><div class="kpi-card"><div class="d-flex align-items-center gap-3"><div class="kpi-icon bg-primary bg-opacity-10"><span class="material-icons text-primary">how_to_vote</span></div><div><div class="kpi-value" id="kpiVotes">-</div><div class="text-muted small">Votes total</div></div></div></div></div>
+            <div class="col-6 col-lg-3"><div class="kpi-card"><div class="d-flex align-items-center gap-3"><div class="kpi-icon bg-success bg-opacity-10"><span class="material-icons text-success">payments</span></div><div><div class="kpi-value" id="kpiRevenue">-</div><div class="text-muted small">Revenus FCFA</div></div></div></div></div>
+            <div class="col-6 col-lg-3"><div class="kpi-card"><div class="d-flex align-items-center gap-3"><div class="kpi-icon bg-info bg-opacity-10"><span class="material-icons text-info">group</span></div><div><div class="kpi-value" id="kpiCandidates">-</div><div class="text-muted small">Candidats</div></div></div></div></div>
+            <div class="col-6 col-lg-3"><div class="kpi-card"><div class="d-flex align-items-center gap-3"><div class="kpi-icon bg-warning bg-opacity-10"><span class="material-icons text-warning">timer</span></div><div><div class="kpi-value" id="kpiTimeLeft">-</div><div class="text-muted small">Temps restant</div></div></div></div></div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-7">
+                <div class="chart-card h-100">
+                    <h6 class="fw-bold mb-3"><span class="material-icons md-18 text-primary me-1 align-middle">bar_chart</span> Classement des candidats</h6>
+                    <canvas id="barChart" height="280"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="chart-card h-100">
+                    <h6 class="fw-bold mb-3"><span class="material-icons md-18 text-primary me-1 align-middle">donut_large</span> Répartition des votes</h6>
+                    <canvas id="donutChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="chart-card h-100">
+                    <h6 class="fw-bold mb-3"><span class="material-icons md-18 text-primary me-1 align-middle">timeline</span> Progression des votes</h6>
+                    <canvas id="lineChart" height="250"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="chart-card h-100">
+                    <h6 class="fw-bold mb-3"><span class="material-icons md-18 text-primary me-1 align-middle">history</span> Activité récente</h6>
+                    <div id="activityLog" style="max-height:300px;overflow-y:auto">
+                        <div class="text-center py-4 text-muted">Chargement...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Controls -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="chart-card">
+                    <h6 class="fw-bold mb-3"><span class="material-icons md-18 text-primary me-1 align-middle">admin_panel_settings</span> Contrôles</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        <button class="btn btn-success rounded-pill" id="btnOpen" onclick="toggleStatus('open')">
+                            <span class="material-icons md-18 me-1 align-middle">play_arrow</span> Ouvrir le scrutin
+                        </button>
+                        <button class="btn btn-danger rounded-pill" id="btnClose" onclick="toggleStatus('closed')">
+                            <span class="material-icons md-18 me-1 align-middle">stop</span> Fermer le scrutin
+                        </button>
+                        <button class="btn btn-outline-primary rounded-pill" onclick="exportCSV()">
+                            <span class="material-icons md-18 me-1 align-middle">download</span> Exporter CSV
+                        </button>
+                        <button class="btn btn-outline-secondary rounded-pill" onclick="exportPDF()">
+                            <span class="material-icons md-18 me-1 align-middle">picture_as_pdf</span> Exporter PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+    (function() {
+        "use strict";
+        var token = localStorage.getItem('admin_token');
+        if (!token) { window.location.href = 'admin-login.html'; return; }
+
+        var params = new URLSearchParams(window.location.search);
+        var eventId = params.get('id');
+        if (!eventId) { window.location.href = 'admin.html'; return; }
+
+        var chartColors = ['#0d6efd','#6610f2','#6f42c1','#d63384','#dc3545','#fd7e14','#ffc107','#198754','#20c997','#0dcaf0'];
+        var barChartInstance, donutChartInstance, lineChartInstance;
+        var currentEvent = null;
+
+        function apiRequest(endpoint) {
+            var url = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE ? CONFIG.API_BASE : '/api/v1') + endpoint;
+            return fetch(url, { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' } })
+                .then(function(r) {
+                    if (r.status === 401) { window.location.href = 'admin-login.html'; throw new Error('Session expirée'); }
+                    return r.json();
+                })
+                .then(function(j) { if (!j.success) throw new Error(j.error); return j.data; });
+        }
+
+        function apiPut(endpoint, body) {
+            var url = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE ? CONFIG.API_BASE : '/api/v1') + endpoint;
+            return fetch(url, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+                .then(function(r) { return r.json(); })
+                .then(function(j) { if (!j.success) throw new Error(j.error); return j.data; });
+        }
+
+        window.loadDashboard = function() {
+            apiRequest('/admin/events/' + eventId + '/dashboard').then(function(data) {
+                currentEvent = data.event;
+                document.getElementById('dashTitle').textContent = data.event.title;
+                var statusText = data.event.status === 'open' ? '🟢 Ouvert' : data.event.status === 'closed' ? '🔴 Fermé' : '🟡 Brouillon';
+                document.getElementById('dashSubtitle').textContent = statusText;
+
+                // KPIs
+                document.getElementById('kpiVotes').textContent = Utils.formatNumber(data.total_votes || 0);
+                document.getElementById('kpiRevenue').textContent = Utils.formatNumber(data.total_revenue || 0);
+                document.getElementById('kpiCandidates').textContent = (data.candidates || []).length;
+                document.getElementById('kpiTimeLeft').textContent = data.event.closes_at ? Utils.formatCountdown(data.event.closes_at) : '∞';
+
+                // Toggle buttons
+                document.getElementById('btnOpen').style.display = data.event.status === 'open' ? 'none' : '';
+                document.getElementById('btnClose').style.display = data.event.status === 'open' ? '' : 'none';
+
+                renderBarChart(data.candidates || [], data.total_votes);
+                renderDonutChart(data.candidates || []);
+                renderLineChart(data.votes_by_hour || []);
+                renderActivity(data.recent_activity || []);
+            }).catch(function(err) { UVToast.error(err.message); });
+        };
+
+        function renderBarChart(candidates, totalVotes) {
+            var ctx = document.getElementById('barChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+            var labels = [], data = [], colors = [];
+            for (var i = 0; i < candidates.length; i++) {
+                labels.push('#' + (candidates[i].dossard || '?') + ' ' + candidates[i].name);
+                data.push(candidates[i].vote_count || 0);
+                colors.push(chartColors[i % chartColors.length]);
+            }
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: labels, datasets: [{ label: 'Votes', data: data, backgroundColor: colors, borderRadius: 8, borderSkipped: false }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+            });
+        }
+
+        function renderDonutChart(candidates) {
+            var ctx = document.getElementById('donutChart').getContext('2d');
+            if (donutChartInstance) donutChartInstance.destroy();
+            var labels = [], data = [], colors = [];
+            for (var i = 0; i < candidates.length; i++) {
+                labels.push(candidates[i].name);
+                data.push(candidates[i].vote_count || 0);
+                colors.push(chartColors[i % chartColors.length]);
+            }
+            donutChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, pointStyleWidth: 10 } } } }
+            });
+        }
+
+        function renderLineChart(hourlyData) {
+            var ctx = document.getElementById('lineChart').getContext('2d');
+            if (lineChartInstance) lineChartInstance.destroy();
+            var labels = [], data = [], cumulative = 0;
+            for (var i = 0; i < hourlyData.length; i++) {
+                labels.push(hourlyData[i].hour);
+                cumulative += hourlyData[i].votes;
+                data.push(cumulative);
+            }
+            if (!labels.length) { labels = ['Pas de données']; data = [0]; }
+            lineChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Votes cumulés', data: data, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#0d6efd' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function renderActivity(activity) {
+            var el = document.getElementById('activityLog');
+            if (!activity.length) { el.innerHTML = '<div class="text-center py-4 text-muted"><span class="material-icons mb-1" style="font-size:32px">inbox</span><p class="small">Aucune activité</p></div>'; return; }
+            var html = '';
+            for (var i = 0; i < activity.length; i++) {
+                var a = activity[i];
+                html += '<div class="activity-item d-flex align-items-center">' +
+                    '<span class="material-icons text-success me-2" style="font-size:18px">check_circle</span>' +
+                    '<div class="flex-grow-1"><strong>' + a.candidate + '</strong> — ' + a.votes + ' vote(s)</div>' +
+                    '<span class="text-muted small">' + a.time + '</span></div>';
+            }
+            el.innerHTML = html;
+        }
+
+        window.toggleStatus = function(status) {
+            var msg = status === 'open' ? 'Ouvrir ce scrutin au public ?' : 'Fermer ce scrutin ? Les votes seront arrêtés.';
+            UVConfirm(status === 'open' ? 'Ouvrir le scrutin' : 'Fermer le scrutin', msg, function() {
+                apiPut('/admin/events/' + eventId, { status: status }).then(function() {
+                    UVToast.success('Statut mis à jour');
+                    loadDashboard();
+                }).catch(function(err) { UVToast.error(err.message); });
+            });
+        };
+
+        window.exportCSV = function() {
+            var url = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE ? CONFIG.API_BASE : '/api/v1') + '/admin/transactions/export?event_id=' + eventId + '&token=' + token;
+            window.open(url, '_blank');
+        };
+
+        window.exportPDF = function() { window.print(); };
+
+        // Init + auto-refresh
+        loadDashboard();
+        setInterval(loadDashboard, 30000);
+    })();
+    </script>
+</body>
+</html>

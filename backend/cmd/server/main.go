@@ -175,6 +175,7 @@ func main() {
 		admin.POST("/events", eventHandler.CreateEvent)
 		admin.PUT("/events/:id", eventHandler.UpdateEvent)
 		admin.DELETE("/events/:id", eventHandler.DeleteEvent)
+		admin.GET("/events/:id/dashboard", adminHandler.EventDashboard)
 		admin.POST("/events/:id/candidates", candidateHandler.CreateCandidate)
 		admin.PUT("/candidates/:id", candidateHandler.UpdateCandidate)
 		admin.DELETE("/candidates/:id", candidateHandler.DeleteCandidate)

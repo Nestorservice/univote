@@ -151,6 +151,7 @@
                         '<td><span class="badge bg-primary bg-opacity-10 text-primary">' + candCount + ' candidats</span></td>' +
                         '<td>' + (e.closes_at ? Utils.formatDate(e.closes_at) : '-') + '</td>' +
                         '<td>' +
+                            '<a href="event-dashboard.html?id=' + e.id + '" class="btn btn-sm btn-light text-success me-1" title="Dashboard"><span class="material-icons md-18">analytics</span></a>' +
                             '<button class="btn btn-sm btn-light text-primary me-1" onclick="AdminApp.editEvent(\'' + e.id + '\')" title="Modifier"><span class="material-icons md-18">edit</span></button>' +
                             '<button class="btn btn-sm btn-primary me-1" onclick="AdminApp.openCandidatesModal(\'' + e.id + '\', \'' + e.title.replace(/'/g, "\\'") + '\')" title="Candidats"><span class="material-icons md-18">group</span></button>' +
                             '<button class="btn btn-sm btn-light text-danger" onclick="AdminApp.deleteEvent(\'' + e.id + '\')" title="Supprimer"><span class="material-icons md-18">delete</span></button>' +

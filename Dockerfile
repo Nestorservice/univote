@@ -6,6 +6,8 @@ WORKDIR /app
 # Copier les fichiers du backend
 COPY backend/go.mod backend/go.sum ./backend/
 WORKDIR /app/backend
+
+# Empêcher le build de mettre à jour le toolchain ou go.mod
 ENV GOTOOLCHAIN=local
 RUN go mod download
 

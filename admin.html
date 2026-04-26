@@ -208,6 +208,16 @@
                     <form id="eventForm">
                         <input type="hidden" id="evId">
                         <div class="mb-3">
+                            <label class="form-label fw-bold">Bannière de l'événement</label>
+                            <div class="banner-preview mb-2" id="bannerPreview" onclick="document.getElementById('evBanner').click()">
+                                <div class="placeholder-content" id="bannerPlaceholder">
+                                    <span class="material-icons">add_photo_alternate</span>
+                                    <div class="small mt-1">Cliquez pour ajouter (JPG, PNG, WEBP — max 5MB)</div>
+                                </div>
+                            </div>
+                            <input type="file" class="d-none" id="evBanner" accept="image/jpeg,image/png,image/webp">
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Titre</label>
                             <input type="text" class="form-control" id="evTitle" required>
                         </div>
@@ -292,9 +302,15 @@
                             <label class="form-label">Biographie / Slogan</label>
                             <textarea class="form-control" id="candBio" rows="3"></textarea>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label">Photo (Laissez vide pour conserver l'actuelle si modification)</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Photo principale</label>
                             <input type="file" class="form-control" id="candPhoto" accept="image/*">
+                            <div id="candPhotoPreview" class="mt-2"></div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Galerie (jusqu'à 6 photos)</label>
+                            <input type="file" class="form-control" id="candGallery" accept="image/*" multiple>
+                            <div id="candGalleryPreview" class="gallery-upload-grid mt-2"></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 rounded-pill py-2" id="candSaveBtn">Enregistrer le candidat</button>
                     </form>
@@ -309,6 +325,7 @@
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/pages/admin.js"></script>
 </body>
 </html>

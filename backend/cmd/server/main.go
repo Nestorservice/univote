@@ -72,7 +72,7 @@ func main() {
 
 	// ─── Handlers ───────────────────────────────────────────────
 	authHandler := handlers.NewAuthHandler(db, cfg.JWTExpiry, cfg.JWTRefreshExpiry)
-	eventHandler := handlers.NewEventHandler(db)
+	eventHandler := handlers.NewEventHandler(db, cfg.UploadDir)
 	candidateHandler := handlers.NewCandidateHandler(db, cfg.UploadDir)
 	voteHandler := handlers.NewVoteHandler(voteService)
 	webhookHandler := handlers.NewWebhookHandler(db, redisClient, cfg.NotchPayWebhookSecret, wsHub)

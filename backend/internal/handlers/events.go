@@ -1,8 +1,13 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
 	"math"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,12 +18,13 @@ import (
 
 // EventHandler gère les opérations sur les événements.
 type EventHandler struct {
-	DB *gorm.DB
+	DB        *gorm.DB
+	UploadDir string
 }
 
 // NewEventHandler crée un nouveau EventHandler.
-func NewEventHandler(db *gorm.DB) *EventHandler {
-	return &EventHandler{DB: db}
+func NewEventHandler(db *gorm.DB, uploadDir string) *EventHandler {
+	return &EventHandler{DB: db, UploadDir: uploadDir}
 }
 
 // ListPublicEvents retourne les événements publics.
@@ -46,7 +52,7 @@ func (h *EventHandler) ListPublicEvents(c *gin.Context) {
 
 	query.Count(&total)
 	offset := (pagination.Page - 1) * pagination.Limit
-	query.Order("created_at DESC").Offset(offset).Limit(pagination.Limit).Find(&events)
+	query.Preload("Candidates").Order("created_at DESC").Offset(offset).Limit(pagination.Limit).Find(&events)
 
 	c.JSON(http.StatusOK, models.APIResponse{
 		Success: true,
@@ -131,27 +137,53 @@ func (h *EventHandler) AdminListEvents(c *gin.Context) {
 
 // CreateEvent crée un événement.
 func (h *EventHandler) CreateEvent(c *gin.Context) {
-	var req models.CreateEventRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Error: "Données invalides: " + err.Error()})
-		return
-	}
+	var event models.Event
+	event.Status = "draft"
+	event.Type = "free"
 
-	event := models.Event{
-		Title: req.Title, Description: req.Description, Type: req.Type,
-		PricePerVote: req.PricePerVote, ShowResults: req.ShowResults, BannerURL: req.BannerURL, Status: "draft",
-	}
-	if req.Status != "" {
-		event.Status = req.Status
-	}
-	if req.OpensAt != "" {
-		if t, err := time.Parse(time.RFC3339, req.OpensAt); err == nil {
-			event.OpensAt = &t
+	contentType := c.GetHeader("Content-Type")
+	if strings.Contains(contentType, "multipart") {
+		event.Title = c.PostForm("title")
+		event.Description = c.PostForm("description")
+		if t := c.PostForm("type"); t != "" { event.Type = t }
+		if p := c.PostForm("price_per_vote"); p != "" {
+			fmt.Sscanf(p, "%d", &event.PricePerVote)
 		}
-	}
-	if req.ClosesAt != "" {
-		if t, err := time.Parse(time.RFC3339, req.ClosesAt); err == nil {
-			event.ClosesAt = &t
+		if s := c.PostForm("status"); s != "" { event.Status = s }
+		if sr := c.PostForm("show_results"); sr == "true" { event.ShowResults = true }
+		if oa := c.PostForm("opens_at"); oa != "" {
+			if t, err := time.Parse(time.RFC3339, oa); err == nil { event.OpensAt = &t }
+		}
+		if ca := c.PostForm("closes_at"); ca != "" {
+			if t, err := time.Parse(time.RFC3339, ca); err == nil { event.ClosesAt = &t }
+		}
+		
+		file, header, err := c.Request.FormFile("banner")
+		if err == nil {
+			defer file.Close()
+			if photoURL, uploadErr := h.saveFile(file, header.Filename); uploadErr == nil {
+				event.BannerURL = photoURL
+			}
+		}
+	} else {
+		var req models.CreateEventRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Error: "Données invalides: " + err.Error()})
+			return
+		}
+
+		event.Title = req.Title
+		event.Description = req.Description
+		event.Type = req.Type
+		event.PricePerVote = req.PricePerVote
+		event.ShowResults = req.ShowResults
+		event.BannerURL = req.BannerURL
+		if req.Status != "" { event.Status = req.Status }
+		if req.OpensAt != "" {
+			if t, err := time.Parse(time.RFC3339, req.OpensAt); err == nil { event.OpensAt = &t }
+		}
+		if req.ClosesAt != "" {
+			if t, err := time.Parse(time.RFC3339, req.ClosesAt); err == nil { event.ClosesAt = &t }
 		}
 	}
 
@@ -173,20 +205,50 @@ func (h *EventHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	var req models.UpdateEventRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Error: "Données invalides"})
-		return
-	}
-
 	updates := make(map[string]interface{})
-	if req.Title != nil { updates["title"] = *req.Title }
-	if req.Description != nil { updates["description"] = *req.Description }
-	if req.Type != nil { updates["type"] = *req.Type }
-	if req.PricePerVote != nil { updates["price_per_vote"] = *req.PricePerVote }
-	if req.Status != nil { updates["status"] = *req.Status }
-	if req.ShowResults != nil { updates["show_results"] = *req.ShowResults }
-	if req.BannerURL != nil { updates["banner_url"] = *req.BannerURL }
+	contentType := c.GetHeader("Content-Type")
+	if strings.Contains(contentType, "multipart") {
+		if title := c.PostForm("title"); title != "" { updates["title"] = title }
+		if desc := c.PostForm("description"); desc != "" { updates["description"] = desc }
+		if t := c.PostForm("type"); t != "" { updates["type"] = t }
+		if p := c.PostForm("price_per_vote"); p != "" {
+			var price int
+			if _, err := fmt.Sscanf(p, "%d", &price); err == nil {
+				updates["price_per_vote"] = price
+			}
+		}
+		if s := c.PostForm("status"); s != "" { updates["status"] = s }
+		if sr := c.PostForm("show_results"); sr != "" {
+			updates["show_results"] = sr == "true"
+		}
+		if oa := c.PostForm("opens_at"); oa != "" {
+			if t, err := time.Parse(time.RFC3339, oa); err == nil { updates["opens_at"] = &t }
+		}
+		if ca := c.PostForm("closes_at"); ca != "" {
+			if t, err := time.Parse(time.RFC3339, ca); err == nil { updates["closes_at"] = &t }
+		}
+
+		file, header, err := c.Request.FormFile("banner")
+		if err == nil {
+			defer file.Close()
+			if photoURL, uploadErr := h.saveFile(file, header.Filename); uploadErr == nil {
+				updates["banner_url"] = photoURL
+			}
+		}
+	} else {
+		var req models.UpdateEventRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse{Success: false, Error: "Données invalides"})
+			return
+		}
+		if req.Title != nil { updates["title"] = *req.Title }
+		if req.Description != nil { updates["description"] = *req.Description }
+		if req.Type != nil { updates["type"] = *req.Type }
+		if req.PricePerVote != nil { updates["price_per_vote"] = *req.PricePerVote }
+		if req.Status != nil { updates["status"] = *req.Status }
+		if req.ShowResults != nil { updates["show_results"] = *req.ShowResults }
+		if req.BannerURL != nil { updates["banner_url"] = *req.BannerURL }
+	}
 
 	h.DB.Model(&event).Updates(updates)
 	logAudit(h.DB, c, "UPDATE_EVENT", "event:"+id, nil)
@@ -218,4 +280,30 @@ func logAudit(db *gorm.DB, c *gin.Context, action, target string, details models
 		}
 	}
 	db.Create(&log)
+}
+
+// saveFile enregistre un fichier uploadé et retourne son URL relative.
+func (h *EventHandler) saveFile(file io.Reader, originalName string) (string, error) {
+	ext := filepath.Ext(originalName)
+	allowedExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".webp": true}
+	if !allowedExts[strings.ToLower(ext)] {
+		return "", fmt.Errorf("extension non autorisée: %s", ext)
+	}
+
+	filename := fmt.Sprintf("banner_%s_%d%s", uuid.New().String(), time.Now().Unix(), ext)
+	filepath := filepath.Join(h.UploadDir, filename)
+
+	os.MkdirAll(h.UploadDir, 0755)
+
+	dst, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer dst.Close()
+
+	if _, err := io.Copy(dst, file); err != nil {
+		return "", err
+	}
+
+	return "/uploads/" + filename, nil
 }

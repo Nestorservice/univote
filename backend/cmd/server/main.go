@@ -35,7 +35,8 @@ func main() {
 
 	// Auto-migrate les modèles
 	db.AutoMigrate(&models.User{}, &models.Event{}, &models.Candidate{},
-		&models.Transaction{}, &models.AuditLog{})
+		&models.Transaction{}, &models.AuditLog{}, &models.Video{},
+		&models.Like{}, &models.Comment{}, &models.Report{})
 
 	// ─── Redis ──────────────────────────────────────────────────
 	redisClient := cache.Connect(cfg.RedisURL)

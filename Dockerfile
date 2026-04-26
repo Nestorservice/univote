@@ -1,19 +1,17 @@
 # Étape 1 : Builder le backend Go
 FROM golang:1.23-alpine AS builder
 
-RUN apk add --no-cache git
+WORKDIR /app
 
+# Copier les fichiers du backend
+COPY backend/go.mod backend/go.sum ./backend/
 WORKDIR /app/backend
-
-# Copier tout le code backend d'un coup
-COPY backend/ ./
-
-# Forcer le toolchain local et rebuild les modules
 ENV GOTOOLCHAIN=local
-ENV GONOSUMCHECK=*
-ENV GOFLAGS=-mod=mod
+RUN go mod download
 
-RUN go mod tidy && go get github.com/gin-contrib/gzip
+# Copier le reste du code backend
+COPY backend/ ./
+# Compiler l'application Go
 RUN CGO_ENABLED=0 GOOS=linux go build -o /univote-api ./cmd/server
 
 # Étape 2 : Image finale légère

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
 // CloudinaryService gère l'upload et la modération des vidéos via Cloudinary.
@@ -131,4 +133,20 @@ func (s *CloudinaryService) ParseModerationResult(payload *WebhookPayload) (appr
 
 	// Si rejeté, Cloudinary met la raison dans Kind ou d'autres champs étendus
 	return false, fmt.Sprintf("rejected_by_ai: %s", mod.Kind)
+}
+
+// UploadImage upload une image directement sur Cloudinary depuis le backend.
+func (s *CloudinaryService) UploadImage(ctx context.Context, file io.Reader, folder string) (string, error) {
+	if s.Cld == nil {
+		return "", fmt.Errorf("cloudinary service not initialized")
+	}
+
+	resp, err := s.Cld.Upload.Upload(ctx, file, uploader.UploadParams{
+		Folder: folder,
+	})
+	if err != nil {
+		return "", fmt.Errorf("cloudinary upload failed: %w", err)
+	}
+
+	return resp.SecureURL, nil
 }

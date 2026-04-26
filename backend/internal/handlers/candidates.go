@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,18 +13,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/univote/backend/internal/models"
+	"github.com/univote/backend/internal/services"
 	"gorm.io/gorm"
 )
 
 // CandidateHandler gère les opérations sur les candidats.
 type CandidateHandler struct {
-	DB        *gorm.DB
-	UploadDir string
+	DB         *gorm.DB
+	CldService *services.CloudinaryService
 }
 
 // NewCandidateHandler crée un nouveau CandidateHandler.
-func NewCandidateHandler(db *gorm.DB, uploadDir string) *CandidateHandler {
-	return &CandidateHandler{DB: db, UploadDir: uploadDir}
+func NewCandidateHandler(db *gorm.DB, cldService *services.CloudinaryService) *CandidateHandler {
+	return &CandidateHandler{DB: db, CldService: cldService}
 }
 
 // GetCandidate retourne la fiche d'un candidat.
@@ -180,7 +182,7 @@ func (h *CandidateHandler) DeleteCandidate(c *gin.Context) {
 	c.JSON(http.StatusOK, models.APIResponse{Success: true, Message: "Candidat supprimé"})
 }
 
-// saveFile enregistre un fichier uploadé et retourne son URL relative.
+// saveFile enregistre un fichier uploadé et retourne son URL (Cloudinary).
 func (h *CandidateHandler) saveFile(file io.Reader, originalName string) (string, error) {
 	ext := filepath.Ext(originalName)
 	allowedExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".gif": true, ".webp": true}
@@ -188,20 +190,14 @@ func (h *CandidateHandler) saveFile(file io.Reader, originalName string) (string
 		return "", fmt.Errorf("extension non autorisée: %s", ext)
 	}
 
-	filename := fmt.Sprintf("%s_%d%s", uuid.New().String(), time.Now().Unix(), ext)
-	filepath := filepath.Join(h.UploadDir, filename)
-
-	os.MkdirAll(h.UploadDir, 0755)
-
-	dst, err := os.Create(filepath)
-	if err != nil {
-		return "", err
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, file); err != nil {
-		return "", err
+	// Utilisez un context de base
+	ctx := context.Background()
+	folder := "univote/candidates"
+	
+	// Si le service Cloudinary est configuré, uploadez sur Cloudinary
+	if h.CldService != nil && h.CldService.Cld != nil {
+		return h.CldService.UploadImage(ctx, file, folder)
 	}
 
-	return "/uploads/" + filename, nil
+	return "", fmt.Errorf("cloudinary service not available")
 }

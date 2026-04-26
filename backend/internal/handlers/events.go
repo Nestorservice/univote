@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"math"
@@ -13,18 +14,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/univote/backend/internal/models"
+	"github.com/univote/backend/internal/services"
 	"gorm.io/gorm"
 )
 
 // EventHandler gère les opérations sur les événements.
 type EventHandler struct {
-	DB        *gorm.DB
-	UploadDir string
+	DB         *gorm.DB
+	CldService *services.CloudinaryService
 }
 
 // NewEventHandler crée un nouveau EventHandler.
-func NewEventHandler(db *gorm.DB, uploadDir string) *EventHandler {
-	return &EventHandler{DB: db, UploadDir: uploadDir}
+func NewEventHandler(db *gorm.DB, cldService *services.CloudinaryService) *EventHandler {
+	return &EventHandler{DB: db, CldService: cldService}
 }
 
 // ListPublicEvents retourne les événements publics.
@@ -282,7 +284,7 @@ func logAudit(db *gorm.DB, c *gin.Context, action, target string, details models
 	db.Create(&log)
 }
 
-// saveFile enregistre un fichier uploadé et retourne son URL relative.
+// saveFile enregistre un fichier uploadé et retourne son URL (Cloudinary).
 func (h *EventHandler) saveFile(file io.Reader, originalName string) (string, error) {
 	ext := filepath.Ext(originalName)
 	allowedExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".webp": true}
@@ -290,20 +292,12 @@ func (h *EventHandler) saveFile(file io.Reader, originalName string) (string, er
 		return "", fmt.Errorf("extension non autorisée: %s", ext)
 	}
 
-	filename := fmt.Sprintf("banner_%s_%d%s", uuid.New().String(), time.Now().Unix(), ext)
-	filepath := filepath.Join(h.UploadDir, filename)
+	ctx := context.Background()
+	folder := "univote/events"
 
-	os.MkdirAll(h.UploadDir, 0755)
-
-	dst, err := os.Create(filepath)
-	if err != nil {
-		return "", err
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, file); err != nil {
-		return "", err
+	if h.CldService != nil && h.CldService.Cld != nil {
+		return h.CldService.UploadImage(ctx, file, folder)
 	}
 
-	return "/uploads/" + filename, nil
+	return "", fmt.Errorf("cloudinary service not available")
 }
